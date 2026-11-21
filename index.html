@@ -139,6 +139,13 @@ pre#out {
           <label>Região onde terminou
             <input type="text" id="f-localFinal" data-k="localFinal" autocomplete="off">
           </label>
+          <label class="full">Negociação da ação (padrão do servidor)
+            <select id="f-negociacao" data-k="negociacao">
+              <option value="">Nenhuma</option>
+              <option value="Fuga limpa">Fuga limpa</option>
+              <option value="Todos em solo">Todos em solo</option>
+            </select>
+          </label>
           <div class="full checks">
             <label class="check"><input type="checkbox" id="f-fugaVeic" data-k="fugaVeic"> Empreendeu fuga com o veículo</label>
             <label class="check"><input type="checkbox" id="f-inop" data-k="inop"> Veículo ficou inoperante</label>
@@ -226,8 +233,12 @@ pre#out {
 </div>
 
 <datalist id="dl-oc">
-  <option value="Corrida Ilegal"><option value="Tráfico de Drogas"><option value="Roubo a Loja"><option value="Roubo a Banco">
-  <option value="Disparo de Arma de Fogo"><option value="Porte Ilegal de Arma"><option value="Perseguição"><option value="Sequestro"><option value="Homicídio">
+  <option value="Corrida Ilegal"><option value="Tráfico de Drogas"><option value="Boosting"><option value="Sequestro">
+  <option value="Roubo à Porta-malas"><option value="Roubo à Residência"><option value="ATMs e Registradoras">
+  <option value="Estúdio de Tatuagem"><option value="Ammunation"><option value="Loja de Bebidas"><option value="Loja de Departamento">
+  <option value="Carro Forte"><option value="Joalheria"><option value="Docas"><option value="Concessionária">
+  <option value="Banco Fleeca"><option value="Banco de Paleto"><option value="Banco Central"><option value="Banco Roxwood">
+  <option value="Laboratório Humane (Nióbio)"><option value="Ação de Rua"><option value="Guerra">
 </datalist>
 <datalist id="dl-origem"><option value="central"><option value="patrulhamento"><option value="denúncia anônima"></datalist>
 <datalist id="dl-team"></datalist>
@@ -243,7 +254,7 @@ pre#out {
       header: "🛡️ 1º Batalhão de Polícia Militar - Cidade Alta (1ºBPM-CA) 🛡️",
       me: "Liam Storms Huayra",
       team: "Vege Dokasi DiMalote",
-      ocorrencia: "", origem: "central", localQru: "", localFinal: "",
+      ocorrencia: "", origem: "central", localQru: "", localFinal: "", negociacao: "",
       fugaVeic: false, inop: false, fugaPe: false,
       relato: "", relatoManual: false,
       semVeiculo: false, modelo: "", placa: "", dono: "", cor: "",
@@ -293,6 +304,7 @@ pre#out {
     } else {
       t += " O mesmo foi abordado e conduzido até o departamento policial para prisão.";
     }
+    if (S.negociacao) t += " A ação foi negociada como " + S.negociacao.toLowerCase() + ".";
     return t;
   }
 
