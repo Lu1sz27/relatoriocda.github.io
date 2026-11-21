@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+<title>Gerador de Relatório 1ºBPM</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: formulário em seções à esquerda, relatório pronto fixo à direita; empilha no celular. */
+:root {
+  --bg: #eceff4;
+  --surface: #ffffff;
+  --surface-2: #f3f5f9;
+  --fg: #14203a;
+  --muted: #5a6784;
+  --line: #d3d9e4;
+  --accent: #1f3a6e;
+  --accent-fg: #ffffff;
+  --badge: #a97b0e;
+  --ok: #1d7a4a;
+  --font-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-body: "Barlow", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1424; --surface: #131e34; --surface-2: #0f192d; --fg: #e6ebf5; --muted: #93a0bb;
+    --line: #27365a; --accent: #5b86d6; --accent-fg: #07101f; --badge: #e0b84a; --ok: #4cc58a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1424; --surface: #131e34; --surface-2: #0f192d; --fg: #e6ebf5; --muted: #93a0bb;
+  --line: #27365a; --accent: #5b86d6; --accent-fg: #07101f; --badge: #e0b84a; --ok: #4cc58a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.45;
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1180px; margin: 0 auto; }
+header.top { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 16px; margin-bottom: 18px; }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: 2rem; letter-spacing: .02em; text-transform: uppercase; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); margin: 2px 0 0; max-width: 60ch; }
+.grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 900px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+.form { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+section.card, details.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px 16px; min-width: 0; }
+h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: .06em; text-transform: uppercase; margin: 0 0 10px; color: var(--badge); }
+details.card > summary { cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: .06em; text-transform: uppercase; color: var(--badge); }
+details.card[open] > summary { margin-bottom: 10px; }
+.row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
+.row .full { grid-column: 1 / -1; }
+@media (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr); } }
+label { display: flex; flex-direction: column; gap: 4px; font-size: .8rem; font-weight: 600; color: var(--muted); letter-spacing: .03em; min-width: 0; }
+input[type=text], input[type=number], textarea, select {
+  font: inherit; font-size: 15px; font-weight: 400; color: var(--fg); background: var(--surface-2);
+  border: 1px solid var(--line); border-radius: 4px; padding: 8px 10px; width: 100%; min-width: 0;
+}
+textarea { resize: vertical; min-height: 72px; line-height: 1.4; }
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px;
+}
+input:disabled { opacity: .5; }
+.check { flex-direction: row; align-items: center; gap: 8px; font-size: .9rem; font-weight: 500; color: var(--fg); letter-spacing: 0; }
+.check input { width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+.checks { display: flex; flex-direction: column; gap: 8px; }
+.with-me { display: flex; gap: 6px; }
+.with-me input { flex: 1; }
+button { font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; border-radius: 4px; border: 1px solid var(--line); background: var(--surface-2); color: var(--fg); padding: 7px 12px; }
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); padding: 10px 18px; font-size: 15px; }
+button.small { padding: 6px 10px; font-size: 13px; }
+.items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.item { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { border-radius: 99px; padding: 4px 11px; font-weight: 500; font-size: 13px; }
+.hint { font-size: .8rem; color: var(--muted); margin: 6px 0 0; }
+.preview-col { position: sticky; top: 16px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+@media (max-width: 900px) { .preview-col { position: static; } }
+.out-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.out-head h2 { margin: 0; }
+pre#out {
+  margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px;
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+#toast { color: var(--ok); font-weight: 600; font-size: .9rem; min-height: 1.2em; }
+.relato-tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Gerador de Relatório</h1>
+      <p class="sub">Preencha só o que muda. O relatório aparece pronto ao lado, no mesmo formato do 1ºBPM-CA. Os campos já vêm com o exemplo da sua corrida ilegal; clique em Novo relatório para limpar.</p>
+    </div>
+    <button type="button" id="btn-new">Novo relatório</button>
+  </header>
+
+  <div class="grid">
+    <div class="form">
+
+      <details class="card" id="fixed">
+        <summary>Dados fixos (salvos neste navegador)</summary>
+        <div class="row">
+          <label class="full">Título do relatório
+            <input type="text" id="f-header" data-k="header" autocomplete="off">
+          </label>
+          <label>Meu nome
+            <input type="text" id="f-me" data-k="me" autocomplete="off">
+          </label>
+          <label class="full">Equipe (um nome por linha, aparecem como sugestão)
+            <textarea id="f-team" data-k="team" rows="3"></textarea>
+          </label>
+        </div>
+      </details>
+
+      <section class="card">
+        <h2>Ocorrência</h2>
+        <div class="row">
+          <label>Tipo de ocorrência (QRU)
+            <input type="text" id="f-ocorrencia" data-k="ocorrencia" list="dl-oc" autocomplete="off">
+          </label>
+          <label>Recebida via
+            <input type="text" id="f-origem" data-k="origem" list="dl-origem" autocomplete="off">
+          </label>
+          <label>Região da denúncia
+            <input type="text" id="f-localQru" data-k="localQru" autocomplete="off">
+          </label>
+          <label>Região onde terminou
+            <input type="text" id="f-localFinal" data-k="localFinal" autocomplete="off">
+          </label>
+          <div class="full checks">
+            <label class="check"><input type="checkbox" id="f-fugaVeic" data-k="fugaVeic"> Empreendeu fuga com o veículo</label>
+            <label class="check"><input type="checkbox" id="f-inop" data-k="inop"> Veículo ficou inoperante</label>
+            <label class="check"><input type="checkbox" id="f-fugaPe" data-k="fugaPe"> Tentou fuga a pé e foi capturado</label>
+          </div>
+          <label class="full">Relato (pode editar à mão)
+            <textarea id="f-relato" data-k="relato" rows="7"></textarea>
+          </label>
+          <div class="full relato-tools">
+            <span class="hint" id="relato-state">Texto montado automaticamente pelos campos acima.</span>
+            <button type="button" class="small" id="btn-regen" hidden>Montar de novo</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Veículo</h2>
+        <label class="check" style="margin-bottom:10px"><input type="checkbox" id="f-semVeiculo" data-k="semVeiculo"> Sem veículo nesta ocorrência</label>
+        <div class="row" id="veic-fields">
+          <label>Modelo
+            <input type="text" id="f-modelo" data-k="modelo" autocomplete="off">
+          </label>
+          <label>Placa
+            <input type="text" id="f-placa" data-k="placa" autocomplete="off" style="text-transform:uppercase">
+          </label>
+          <label>Dono
+            <input type="text" id="f-dono" data-k="dono" autocomplete="off">
+          </label>
+          <label>Cor e características
+            <input type="text" id="f-cor" data-k="cor" autocomplete="off" placeholder="Preta com neon Vermelho">
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Objetos apreendidos</h2>
+        <div class="items" id="items"></div>
+        <div class="chips" id="chips" aria-label="Itens comuns"></div>
+        <p class="hint">Clique num item comum para adicionar. Deixe a lista vazia se nada foi apreendido.</p>
+        <div style="margin-top:8px"><button type="button" class="small" id="btn-add-item">+ Outro item</button></div>
+      </section>
+
+      <section class="card">
+        <h2>Observações</h2>
+        <div class="row">
+          <label class="full">Revista pessoal feita por
+            <input type="text" id="f-revistaPor" data-k="revistaPor" list="dl-team" autocomplete="off">
+          </label>
+          <label class="full">Outras observações (opcional)
+            <textarea id="f-obsExtra" data-k="obsExtra" rows="2"></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Responsabilidades</h2>
+        <div class="row">
+          <label class="full">Relatório
+            <span class="with-me"><input type="text" id="f-relatorio" data-k="relatorio" list="dl-team" autocomplete="off"><button type="button" class="small" data-me="relatorio">Eu</button></span>
+          </label>
+          <label class="full">Condução
+            <span class="with-me"><input type="text" id="f-conducao" data-k="conducao" list="dl-team" autocomplete="off"><button type="button" class="small" data-me="conducao">Eu</button></span>
+          </label>
+          <label class="full">Revista do veículo
+            <span class="with-me"><input type="text" id="f-revVeic" data-k="revVeic" list="dl-team" autocomplete="off"><button type="button" class="small" data-me="revVeic">Eu</button></span>
+          </label>
+          <label class="full">Apreensão do veículo
+            <span class="with-me"><input type="text" id="f-apreVeic" data-k="apreVeic" list="dl-team" autocomplete="off"><button type="button" class="small" data-me="apreVeic">Eu</button></span>
+          </label>
+        </div>
+      </section>
+    </div>
+
+    <div class="preview-col">
+      <div class="out-head">
+        <h2>Relatório pronto</h2>
+        <div class="actions">
+          <span id="toast" role="status" aria-live="polite"></span>
+          <button type="button" class="primary" id="btn-copy">Copiar relatório</button>
+        </div>
+      </div>
+      <pre id="out"></pre>
+    </div>
+  </div>
+</div>
+
+<datalist id="dl-oc">
+  <option value="Corrida Ilegal"><option value="Tráfico de Drogas"><option value="Roubo a Loja"><option value="Roubo a Banco">
+  <option value="Disparo de Arma de Fogo"><option value="Porte Ilegal de Arma"><option value="Perseguição"><option value="Sequestro"><option value="Homicídio">
+</datalist>
+<datalist id="dl-origem"><option value="central"><option value="patrulhamento"><option value="denúncia anônima"></datalist>
+<datalist id="dl-team"></datalist>
+
+<script>
+(function () {
+  var KEY = "relatorio-1bpm-v1";
+  var FIXED = ["header", "me", "team"];
+  var COMMON = ["chip ilegal", "arma", "munição", "drogas", "dinheiro sujo", "colete balístico", "rádio ilegal"];
+
+  function blank() {
+    return {
+      header: "🛡️ 1º Batalhão de Polícia Militar - Cidade Alta (1ºBPM-CA) 🛡️",
+      me: "Liam Storms Huayra",
+      team: "Vege Dokasi DiMalote",
+      ocorrencia: "", origem: "central", localQru: "", localFinal: "",
+      fugaVeic: false, inop: false, fugaPe: false,
+      relato: "", relatoManual: false,
+      semVeiculo: false, modelo: "", placa: "", dono: "", cor: "",
+      items: [], revistaPor: "", obsExtra: "",
+      relatorio: "", conducao: "", revVeic: "", apreVeic: ""
+    };
+  }
+  function example() {
+    var s = blank();
+    s.ocorrencia = "Corrida Ilegal"; s.localQru = "Cassino"; s.localFinal = "Galeria";
+    s.fugaVeic = true; s.inop = true; s.fugaPe = true;
+    s.modelo = "Sentinel VII"; s.placa = "801MOJB"; s.dono = "Russinho Brutiutiusky"; s.cor = "Preta com neon Vermelho";
+    s.items = [{ q: 1, n: "chip ilegal" }];
+    s.revistaPor = "Vege Dokasi DiMalote";
+    s.relatorio = s.me; s.conducao = "Vege Dokasi DiMalote"; s.revVeic = s.me; s.apreVeic = s.me;
+    return s;
+  }
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) { return Object.assign(blank(), JSON.parse(raw)); }
+    } catch (e) {}
+    return example();
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+  var S = load();
+  var $ = function (id) { return document.getElementById(id); };
+
+  function genRelato() {
+    var oc = (S.ocorrencia || "ocorrência").trim();
+    var t = "Recebemos uma denúncia (via " + (S.origem || "central").trim() + "), de uma QRU de " + oc;
+    if (S.localQru.trim()) t += " na região do " + S.localQru.trim();
+    t += ", Ao se deslocar para o referido local, encontramos o(s) requerente(s) cometendo o(s) referido(s) delito(s).";
+    if (S.fugaVeic) {
+      t += " Após aviso sonoro, luminoso e verbal, o indivíduo empreendeu fuga.";
+      if (S.inop) {
+        t += " Minutos depois, o mesmo ficou inoperante em seu veículo" + (S.modelo.trim() ? " " + S.modelo.trim() : "");
+        if (S.localFinal.trim()) t += ", na região do " + S.localFinal.trim();
+        t += ".";
+      }
+    } else {
+      t += " Após aviso sonoro, luminoso e verbal, o indivíduo acatou a ordem de parada.";
+    }
+    if (S.fugaPe) {
+      t += " Iniciou tentativa de fuga a pé, porém foi capturado e conduzido até o departamento policial para prisão.";
+    } else {
+      t += " O mesmo foi abordado e conduzido até o departamento policial para prisão.";
+    }
+    return t;
+  }
+
+  function build() {
+    var L = [];
+    L.push(S.header.trim());
+    L.push("");
+    L.push("📝RELATO:");
+    L.push(S.relato.trim());
+    L.push("");
+    if (!S.semVeiculo) {
+      L.push("🚗 VEÍCULO");
+      L.push("→ Modelo: " + S.modelo.trim());
+      var placa = S.placa.trim().toUpperCase();
+      if (S.dono.trim()) placa += " ( Dono: " + S.dono.trim() + " )";
+      L.push("→ Placa: " + placa);
+      L.push("→ Coloração e características: " + (S.cor.trim() ? "Coloração " + S.cor.trim() : ""));
+      L.push("");
+    }
+    L.push("📦 OBJETOS APREENDIDOS:");
+    var its = S.items.filter(function (i) { return i.n.trim(); });
+    if (its.length) { its.forEach(function (i) { L.push((i.q || 1) + "x " + i.n.trim()); }); }
+    else { L.push("Nada apreendido"); }
+    L.push("");
+    L.push("⚠️ OBSERVAÇÕES:");
+    var obs = [];
+    if (S.revistaPor.trim()) obs.push("Revista ficou por parte do " + S.revistaPor.trim());
+    if (S.obsExtra.trim()) obs.push(S.obsExtra.trim());
+    L.push(obs.length ? obs.join("\n") : "Sem observações");
+    L.push("");
+    L.push("👮‍♂️ RESPONSABILIDADES:");
+    L.push("→ Relatório: " + S.relatorio.trim());
+    L.push("→ Conducao: " + S.conducao.trim());
+    if (!S.semVeiculo) {
+      L.push("→ Revista do veículo: " + S.revVeic.trim());
+      L.push("→ Apreensão do veículo: " + S.apreVeic.trim());
+    }
+    return L.join("\n");
+  }
+
+  function teamList() {
+    return S.team.split("\n").map(function (x) { return x.trim(); }).filter(Boolean);
+  }
+  function renderTeam() {
+    var dl = $("dl-team"); dl.innerHTML = "";
+    var names = teamList();
+    if (S.me.trim() && names.indexOf(S.me.trim()) < 0) names.unshift(S.me.trim());
+    names.forEach(function (n) { var o = document.createElement("option"); o.value = n; dl.appendChild(o); });
+  }
+
+  function renderItems() {
+    var box = $("items"); box.innerHTML = "";
+    S.items.forEach(function (it, idx) {
+      var row = document.createElement("div"); row.className = "item";
+      var q = document.createElement("input"); q.type = "number"; q.min = "1"; q.value = it.q; q.setAttribute("aria-label", "Quantidade"); q.id = "qty-" + idx;
+      q.addEventListener("input", function () { it.q = parseInt(q.value, 10) || 1; update(); });
+      var n = document.createElement("input"); n.type = "text"; n.value = it.n; n.setAttribute("aria-label", "Item"); n.id = "name-" + idx; n.autocomplete = "off";
+      n.addEventListener("input", function () { it.n = n.value; update(); });
+      var x = document.createElement("button"); x.type = "button"; x.className = "small"; x.textContent = "Remover";
+      x.addEventListener("click", function () { S.items.splice(idx, 1); renderItems(); update(); });
+      row.appendChild(q); row.appendChild(n); row.appendChild(x); box.appendChild(row);
+    });
+  }
+  function renderChips() {
+    var c = $("chips");
+    COMMON.forEach(function (name) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = "+ " + name;
+      b.addEventListener("click", function () {
+        var found = S.items.filter(function (i) { return i.n.toLowerCase() === name.toLowerCase(); })[0];
+        if (found) found.q = (found.q || 1) + 1; else S.items.push({ q: 1, n: name });
+        renderItems(); update();
+      });
+      c.appendChild(b);
+    });
+  }
+
+  function syncInputs() {
+    document.querySelectorAll("[data-k]").forEach(function (el) {
+      var k = el.dataset.k;
+      if (el.type === "checkbox") el.checked = !!S[k]; else el.value = S[k] == null ? "" : S[k];
+    });
+  }
+
+  function update() {
+    if (!S.relatoManual) { S.relato = genRelato(); $("f-relato").value = S.relato; }
+    $("btn-regen").hidden = !S.relatoManual;
+    $("relato-state").textContent = S.relatoManual ? "Você editou o relato à mão. Mudar os campos acima não altera mais esse texto." : "Texto montado automaticamente pelos campos acima.";
+    $("f-inop").disabled = !S.fugaVeic;
+    $("f-localFinal").disabled = !(S.fugaVeic && S.inop);
+    $("veic-fields").hidden = S.semVeiculo;
+    $("out").textContent = build();
+    renderTeam();
+    save();
+  }
+
+  document.querySelectorAll("[data-k]").forEach(function (el) {
+    el.addEventListener("input", function () {
+      var k = el.dataset.k;
+      S[k] = el.type === "checkbox" ? el.checked : el.value;
+      if (k === "relato") S.relatoManual = true;
+      update();
+    });
+  });
+  document.querySelectorAll("[data-me]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = b.dataset.me; S[k] = S.me; $("f-" + k).value = S.me; update();
+    });
+  });
+  $("btn-add-item").addEventListener("click", function () {
+    S.items.push({ q: 1, n: "" }); renderItems(); update();
+    var last = document.getElementById("name-" + (S.items.length - 1)); if (last) last.focus();
+  });
+  $("btn-regen").addEventListener("click", function () { S.relatoManual = false; update(); });
+  $("btn-new").addEventListener("click", function () {
+    var keep = {}; FIXED.forEach(function (k) { keep[k] = S[k]; });
+    S = Object.assign(blank(), keep);
+    S.relatorio = S.me;
+    renderItems(); syncInputs(); update();
+    toast("Campos limpos. Dados fixos mantidos.");
+  });
+
+  var tt;
+  function toast(msg) { $("toast").textContent = msg; clearTimeout(tt); tt = setTimeout(function () { $("toast").textContent = ""; }, 2600); }
+
+  function rememberNames() {
+    var names = teamList();
+    [S.revistaPor, S.conducao, S.revVeic, S.apreVeic, S.relatorio].forEach(function (n) {
+      n = (n || "").trim();
+      if (n && n !== S.me.trim() && names.indexOf(n) < 0) names.push(n);
+    });
+    S.team = names.join("\n"); $("f-team").value = S.team;
+  }
+
+  $("btn-copy").addEventListener("click", function () {
+    rememberNames(); update();
+    var text = build();
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents($("out"));
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      toast("Texto selecionado. Use Ctrl+C.");
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { toast("Copiado!"); }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  renderChips(); renderItems(); syncInputs(); update();
+})();
+</script>
+</body>
+</html>
