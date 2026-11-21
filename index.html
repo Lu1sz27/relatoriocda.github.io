@@ -102,7 +102,7 @@ pre#out {
   <header class="top">
     <div>
       <h1>Gerador de Relatório</h1>
-      <p class="sub">Preencha só o que muda. O relatório aparece pronto ao lado, no mesmo formato do 1ºBPM-CA. Os campos já vêm com o exemplo da sua corrida ilegal; clique em Novo relatório para limpar.</p>
+      <p class="sub">Preencha só o que muda. O relatório aparece pronto ao lado, no mesmo formato do 1ºBPM-CA. Os campos já vêm com um exemplo de corrida ilegal; clique em Novo relatório para limpar. Na primeira vez, abra "Dados fixos" e coloque o seu nome.</p>
     </div>
     <button type="button" id="btn-new">Novo relatório</button>
   </header>
@@ -117,10 +117,10 @@ pre#out {
             <input type="text" id="f-header" data-k="header" autocomplete="off">
           </label>
           <label>Meu nome
-            <input type="text" id="f-me" data-k="me" autocomplete="off">
+            <input type="text" id="f-me" data-k="me" autocomplete="off" placeholder="Seu nome completo">
           </label>
           <label class="full">Equipe (um nome por linha, aparecem como sugestão)
-            <textarea id="f-team" data-k="team" rows="3"></textarea>
+            <textarea id="f-team" data-k="team" rows="3" placeholder="Nome do parceiro 1&#10;Nome do parceiro 2"></textarea>
           </label>
         </div>
       </details>
@@ -254,8 +254,8 @@ pre#out {
   function blank() {
     return {
       header: "🛡️ 1º Batalhão de Polícia Militar - Cidade Alta (1ºBPM-CA) 🛡️",
-      me: "Liam Storms Huayra",
-      team: "Vege Dokasi DiMalote",
+      me: "",
+      team: "",
       ocorrencia: "", origem: "central", localQru: "", localFinal: "",
       fugaVeic: false, inop: false, fugaPe: false, resgate: false, fugaAgua: false,
       resgates: [],
@@ -269,10 +269,10 @@ pre#out {
     var s = blank();
     s.ocorrencia = "Corrida Ilegal"; s.localQru = "Cassino"; s.localFinal = "Galeria";
     s.fugaVeic = true; s.inop = true; s.fugaPe = true;
-    s.modelo = "Sentinel VII"; s.placa = "801MOJB"; s.dono = "Russinho Brutiutiusky"; s.cor = "Preta com neon Vermelho";
+    s.modelo = "Sentinel VII"; s.placa = "ABC123"; s.dono = "Fulano de Tal"; s.cor = "Preta com neon Vermelho";
     s.items = [{ q: 1, n: "chip ilegal" }];
-    s.revistaPor = "Vege Dokasi DiMalote";
-    s.relatorio = s.me; s.conducao = "Vege Dokasi DiMalote"; s.revVeic = s.me; s.apreVeic = s.me;
+    s.revistaPor = "";
+    s.relatorio = s.me; s.conducao = ""; s.revVeic = s.me; s.apreVeic = s.me;
     return s;
   }
   function load() {
@@ -588,6 +588,7 @@ pre#out {
   });
 
   renderChips(); renderItems(); renderResgates(); syncInputs(); update();
+  if (!S.me.trim()) $("fixed").open = true;
 })();
 </script>
 </body>
