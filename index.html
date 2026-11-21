@@ -484,13 +484,16 @@ pre#out {
   }
 
   function update() {
+    var temFuga = S.fugaVeic || S.fugaPe;
+    if (!S.fugaVeic) { S.inop = false; S.resgate = false; $("f-inop").checked = false; $("f-resgate").checked = false; }
+    if (!temFuga) { S.fugaAgua = false; $("f-fugaAgua").checked = false; }
     if (!S.relatoManual) { S.relato = genRelato(); $("f-relato").value = S.relato; }
     $("btn-regen").hidden = !S.relatoManual;
     $("relato-state").textContent = S.relatoManual ? "Você editou o relato à mão. Mudar os campos acima não altera mais esse texto." : "Texto montado automaticamente pelos campos acima.";
     $("f-inop").disabled = !S.fugaVeic;
-    $("f-resgate").disabled = !(S.fugaVeic || S.fugaPe);
-    $("f-fugaAgua").disabled = !(S.fugaVeic || S.fugaPe);
-    $("f-localFinal").disabled = !(S.fugaVeic || S.fugaPe);
+    $("f-resgate").disabled = !S.fugaVeic;
+    $("f-fugaAgua").disabled = !temFuga;
+    $("f-localFinal").disabled = !temFuga;
     $("veic-fields").hidden = S.semVeiculo;
     $("resg-box").hidden = !S.resgate;
     $("out").textContent = build();
