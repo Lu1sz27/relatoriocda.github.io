@@ -175,21 +175,8 @@ pre#out {
           </label>
         </div>
         <div id="resg-box" hidden>
-          <h3 class="sub-h">Veículo de resgate</h3>
-          <div class="row">
-            <label>Modelo
-              <input type="text" id="f-rModelo" data-k="rModelo" autocomplete="off">
-            </label>
-            <label>Placa
-              <input type="text" id="f-rPlaca" data-k="rPlaca" autocomplete="off" style="text-transform:uppercase">
-            </label>
-            <label>Dono
-              <input type="text" id="f-rDono" data-k="rDono" autocomplete="off">
-            </label>
-            <label>Cor e características
-              <input type="text" id="f-rCor" data-k="rCor" autocomplete="off" placeholder="Preta com neon Vermelho">
-            </label>
-          </div>
+          <div id="resg-list"></div>
+          <div style="margin-top:8px"><button type="button" class="small" id="btn-add-resg">+ Adicionar veículo de resgate</button></div>
         </div>
       </section>
 
@@ -271,7 +258,7 @@ pre#out {
       team: "Vege Dokasi DiMalote",
       ocorrencia: "", origem: "central", localQru: "", localFinal: "",
       fugaVeic: false, inop: false, fugaPe: false, resgate: false, fugaAgua: false,
-      rModelo: "", rPlaca: "", rDono: "", rCor: "",
+      resgates: [],
       relato: "", relatoManual: false,
       semVeiculo: false, modelo: "", placa: "", dono: "", cor: "",
       items: [], revistaPor: "", obsExtra: "",
@@ -298,6 +285,13 @@ pre#out {
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
 
   var S = load();
+  if (!Array.isArray(S.resgates)) S.resgates = [];
+  if (S.rModelo || S.rPlaca || S.rDono || S.rCor) {
+    S.resgates.push({ modelo: S.rModelo || "", placa: S.rPlaca || "", dono: S.rDono || "", cor: S.rCor || "" });
+  }
+  delete S.rModelo; delete S.rPlaca; delete S.rDono; delete S.rCor;
+  function novoResg() { return { modelo: "", placa: "", dono: "", cor: "" }; }
+  function joinE(a) { return a.length < 2 ? a.join("") : a.slice(0, -1).join(", ") + " e " + a[a.length - 1]; }
   var $ = function (id) { return document.getElementById(id); };
 
   function norm(s) { return (s || "").trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
@@ -375,7 +369,14 @@ pre#out {
     } else {
       t += " Após aviso sonoro, luminoso e verbal, o indivíduo acatou a ordem de parada.";
     }
-    if (S.resgate) t += " Durante o acompanhamento, o indivíduo abandonou o veículo e evadiu em outro veículo (resgate)" + (S.rModelo.trim() ? ", um " + S.rModelo.trim() : "") + ".";
+    if (S.resgate) {
+      var rs = S.resgates.map(function (r) { return r.modelo.trim(); }).filter(Boolean);
+      if (S.resgates.length > 1) {
+        t += " Durante o acompanhamento, houve resgate com " + S.resgates.length + " veículos" + (rs.length ? ": " + joinE(rs) : "") + ".";
+      } else {
+        t += " Durante o acompanhamento, o indivíduo abandonou o veículo e evadiu em outro veículo (resgate)" + (rs.length ? ", um " + rs[0] : "") + ".";
+      }
+    }
     if (S.fugaAgua) t += " Em seguida, o indivíduo saltou na água, sendo realizado o acompanhamento aquático.";
 
     var cap = " capturado" + ((fin && !(S.fugaVeic && S.inop)) ? " na região do " + fin : "");
@@ -411,13 +412,15 @@ pre#out {
       L.push("");
     }
     if (S.resgate) {
-      L.push("🚗 VEÍCULO DE RESGATE");
-      L.push("→ Modelo: " + S.rModelo.trim());
-      var rPlaca = S.rPlaca.trim().toUpperCase();
-      if (S.rDono.trim()) rPlaca += " ( Dono: " + S.rDono.trim() + " )";
-      L.push("→ Placa: " + rPlaca);
-      L.push("→ Coloração e características: " + (S.rCor.trim() ? "Coloração " + S.rCor.trim() : ""));
-      L.push("");
+      S.resgates.forEach(function (r, i) {
+        L.push("🚗 VEÍCULO DE RESGATE" + (S.resgates.length > 1 ? " " + (i + 1) : ""));
+        L.push("→ Modelo: " + r.modelo.trim());
+        var rp = r.placa.trim().toUpperCase();
+        if (r.dono.trim()) rp += " ( Dono: " + r.dono.trim() + " )";
+        L.push("→ Placa: " + rp);
+        L.push("→ Coloração e características: " + (r.cor.trim() ? "Coloração " + r.cor.trim() : ""));
+        L.push("");
+      });
     }
     L.push("📦 OBJETOS APREENDIDOS:");
     var its = S.items.filter(function (i) { return i.n.trim(); });
@@ -463,6 +466,33 @@ pre#out {
       row.appendChild(q); row.appendChild(n); row.appendChild(x); box.appendChild(row);
     });
   }
+  function renderResgates() {
+    var box = $("resg-list"); box.innerHTML = "";
+    S.resgates.forEach(function (r, idx) {
+      var wrap = document.createElement("div");
+      var hd = document.createElement("h3"); hd.className = "sub-h";
+      hd.textContent = "Veículo de resgate" + (S.resgates.length > 1 ? " " + (idx + 1) : "");
+      wrap.appendChild(hd);
+      var row = document.createElement("div"); row.className = "row";
+      [["modelo", "Modelo", ""], ["placa", "Placa", ""], ["dono", "Dono", ""], ["cor", "Cor e características", "Preta com neon Vermelho"]].forEach(function (f) {
+        var lab = document.createElement("label"); lab.appendChild(document.createTextNode(f[1]));
+        var inp = document.createElement("input"); inp.type = "text"; inp.autocomplete = "off";
+        inp.id = "resg-" + idx + "-" + f[0]; inp.value = r[f[0]] || "";
+        if (f[2]) inp.placeholder = f[2];
+        if (f[0] === "placa") inp.style.textTransform = "uppercase";
+        inp.addEventListener("input", function () { r[f[0]] = inp.value; update(); });
+        lab.appendChild(inp); row.appendChild(lab);
+      });
+      wrap.appendChild(row);
+      if (S.resgates.length > 1) {
+        var d = document.createElement("div"); d.style.marginTop = "8px";
+        var x = document.createElement("button"); x.type = "button"; x.className = "small"; x.textContent = "Remover este veículo";
+        x.addEventListener("click", function () { S.resgates.splice(idx, 1); renderResgates(); update(); });
+        d.appendChild(x); wrap.appendChild(d);
+      }
+      box.appendChild(wrap);
+    });
+  }
   function renderChips() {
     var c = $("chips");
     COMMON.forEach(function (name) {
@@ -487,6 +517,7 @@ pre#out {
     var temFuga = S.fugaVeic || S.fugaPe;
     if (!S.fugaVeic) { S.inop = false; S.resgate = false; $("f-inop").checked = false; $("f-resgate").checked = false; }
     if (!temFuga) { S.fugaAgua = false; $("f-fugaAgua").checked = false; }
+    if (S.resgate && S.resgates.length === 0) { S.resgates.push(novoResg()); renderResgates(); }
     if (!S.relatoManual) { S.relato = genRelato(); $("f-relato").value = S.relato; }
     $("btn-regen").hidden = !S.relatoManual;
     $("relato-state").textContent = S.relatoManual ? "Você editou o relato à mão. Mudar os campos acima não altera mais esse texto." : "Texto montado automaticamente pelos campos acima.";
@@ -514,6 +545,10 @@ pre#out {
       var k = b.dataset.me; S[k] = S.me; $("f-" + k).value = S.me; update();
     });
   });
+  $("btn-add-resg").addEventListener("click", function () {
+    S.resgates.push(novoResg()); renderResgates(); update();
+    var last = document.getElementById("resg-" + (S.resgates.length - 1) + "-modelo"); if (last) last.focus();
+  });
   $("btn-add-item").addEventListener("click", function () {
     S.items.push({ q: 1, n: "" }); renderItems(); update();
     var last = document.getElementById("name-" + (S.items.length - 1)); if (last) last.focus();
@@ -523,7 +558,7 @@ pre#out {
     var keep = {}; FIXED.forEach(function (k) { keep[k] = S[k]; });
     S = Object.assign(blank(), keep);
     S.relatorio = S.me;
-    renderItems(); syncInputs(); update();
+    renderItems(); renderResgates(); syncInputs(); update();
     toast("Campos limpos. Dados fixos mantidos.");
   });
 
@@ -552,7 +587,7 @@ pre#out {
     } catch (e) { fallback(); }
   });
 
-  renderChips(); renderItems(); syncInputs(); update();
+  renderChips(); renderItems(); renderResgates(); syncInputs(); update();
 })();
 </script>
 </body>
