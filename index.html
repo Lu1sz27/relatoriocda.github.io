@@ -54,6 +54,7 @@ section.card, details.card { background: var(--surface); border: 1px solid var(-
 h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: .06em; text-transform: uppercase; margin: 0 0 10px; color: var(--badge); }
 details.card > summary { cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: .06em; text-transform: uppercase; color: var(--badge); }
 details.card[open] > summary { margin-bottom: 10px; }
+.sub-h { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: .06em; text-transform: uppercase; color: var(--badge); margin: 16px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
 .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
 .row .full { grid-column: 1 / -1; }
 @media (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr); } }
@@ -139,13 +140,6 @@ pre#out {
           <label>Região onde terminou
             <input type="text" id="f-localFinal" data-k="localFinal" autocomplete="off">
           </label>
-          <label class="full">Negociação da ação (padrão do servidor)
-            <select id="f-negociacao" data-k="negociacao">
-              <option value="">Nenhuma</option>
-              <option value="Fuga limpa">Fuga limpa</option>
-              <option value="Todos em solo">Todos em solo</option>
-            </select>
-          </label>
           <div class="full checks">
             <label class="check"><input type="checkbox" id="f-fugaVeic" data-k="fugaVeic"> Empreendeu fuga com o veículo</label>
             <label class="check"><input type="checkbox" id="f-inop" data-k="inop"> Veículo ficou inoperante</label>
@@ -179,6 +173,23 @@ pre#out {
           <label>Cor e características
             <input type="text" id="f-cor" data-k="cor" autocomplete="off" placeholder="Preta com neon Vermelho">
           </label>
+        </div>
+        <div id="resg-box" hidden>
+          <h3 class="sub-h">Veículo de resgate</h3>
+          <div class="row">
+            <label>Modelo
+              <input type="text" id="f-rModelo" data-k="rModelo" autocomplete="off">
+            </label>
+            <label>Placa
+              <input type="text" id="f-rPlaca" data-k="rPlaca" autocomplete="off" style="text-transform:uppercase">
+            </label>
+            <label>Dono
+              <input type="text" id="f-rDono" data-k="rDono" autocomplete="off">
+            </label>
+            <label>Cor e características
+              <input type="text" id="f-rCor" data-k="rCor" autocomplete="off" placeholder="Preta com neon Vermelho">
+            </label>
+          </div>
         </div>
       </section>
 
@@ -256,8 +267,9 @@ pre#out {
       header: "🛡️ 1º Batalhão de Polícia Militar - Cidade Alta (1ºBPM-CA) 🛡️",
       me: "Liam Storms Huayra",
       team: "Vege Dokasi DiMalote",
-      ocorrencia: "", origem: "central", localQru: "", localFinal: "", negociacao: "",
+      ocorrencia: "", origem: "central", localQru: "", localFinal: "",
       fugaVeic: false, inop: false, fugaPe: false, resgate: false, fugaAgua: false,
+      rModelo: "", rPlaca: "", rDono: "", rCor: "",
       relato: "", relatoManual: false,
       semVeiculo: false, modelo: "", placa: "", dono: "", cor: "",
       items: [], revistaPor: "", obsExtra: "",
@@ -308,7 +320,6 @@ pre#out {
     } else {
       t += " O mesmo foi abordado e conduzido até o departamento policial para prisão.";
     }
-    if (S.negociacao) t += " A ação foi negociada como " + S.negociacao.toLowerCase() + ".";
     return t;
   }
 
@@ -326,6 +337,15 @@ pre#out {
       if (S.dono.trim()) placa += " ( Dono: " + S.dono.trim() + " )";
       L.push("→ Placa: " + placa);
       L.push("→ Coloração e características: " + (S.cor.trim() ? "Coloração " + S.cor.trim() : ""));
+      L.push("");
+    }
+    if (S.resgate) {
+      L.push("🚗 VEÍCULO DE RESGATE");
+      L.push("→ Modelo: " + S.rModelo.trim());
+      var rPlaca = S.rPlaca.trim().toUpperCase();
+      if (S.rDono.trim()) rPlaca += " ( Dono: " + S.rDono.trim() + " )";
+      L.push("→ Placa: " + rPlaca);
+      L.push("→ Coloração e características: " + (S.rCor.trim() ? "Coloração " + S.rCor.trim() : ""));
       L.push("");
     }
     L.push("📦 OBJETOS APREENDIDOS:");
@@ -401,6 +421,7 @@ pre#out {
     $("f-fugaAgua").disabled = !(S.fugaVeic || S.fugaPe);
     $("f-localFinal").disabled = !(S.fugaVeic && S.inop);
     $("veic-fields").hidden = S.semVeiculo;
+    $("resg-box").hidden = !S.resgate;
     $("out").textContent = build();
     renderTeam();
     save();
