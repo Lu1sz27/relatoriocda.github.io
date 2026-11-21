@@ -150,6 +150,8 @@ pre#out {
             <label class="check"><input type="checkbox" id="f-fugaVeic" data-k="fugaVeic"> Empreendeu fuga com o veículo</label>
             <label class="check"><input type="checkbox" id="f-inop" data-k="inop"> Veículo ficou inoperante</label>
             <label class="check"><input type="checkbox" id="f-fugaPe" data-k="fugaPe"> Tentou fuga a pé e foi capturado</label>
+            <label class="check"><input type="checkbox" id="f-resgate" data-k="resgate"> Houve resgate (trocou para outro veículo)</label>
+            <label class="check"><input type="checkbox" id="f-fugaAgua" data-k="fugaAgua"> Fuga aquática (pulou na água)</label>
           </div>
           <label class="full">Relato (pode editar à mão)
             <textarea id="f-relato" data-k="relato" rows="7"></textarea>
@@ -255,7 +257,7 @@ pre#out {
       me: "Liam Storms Huayra",
       team: "Vege Dokasi DiMalote",
       ocorrencia: "", origem: "central", localQru: "", localFinal: "", negociacao: "",
-      fugaVeic: false, inop: false, fugaPe: false,
+      fugaVeic: false, inop: false, fugaPe: false, resgate: false, fugaAgua: false,
       relato: "", relatoManual: false,
       semVeiculo: false, modelo: "", placa: "", dono: "", cor: "",
       items: [], revistaPor: "", obsExtra: "",
@@ -299,6 +301,8 @@ pre#out {
     } else {
       t += " Após aviso sonoro, luminoso e verbal, o indivíduo acatou a ordem de parada.";
     }
+    if (S.resgate) t += " Durante o acompanhamento, o indivíduo abandonou o veículo e evadiu em outro veículo (resgate).";
+    if (S.fugaAgua) t += " Em seguida, o indivíduo saltou na água, sendo realizado o acompanhamento aquático.";
     if (S.fugaPe) {
       t += " Iniciou tentativa de fuga a pé, porém foi capturado e conduzido até o departamento policial para prisão.";
     } else {
@@ -393,6 +397,8 @@ pre#out {
     $("btn-regen").hidden = !S.relatoManual;
     $("relato-state").textContent = S.relatoManual ? "Você editou o relato à mão. Mudar os campos acima não altera mais esse texto." : "Texto montado automaticamente pelos campos acima.";
     $("f-inop").disabled = !S.fugaVeic;
+    $("f-resgate").disabled = !(S.fugaVeic || S.fugaPe);
+    $("f-fugaAgua").disabled = !(S.fugaVeic || S.fugaPe);
     $("f-localFinal").disabled = !(S.fugaVeic && S.inop);
     $("veic-fields").hidden = S.semVeiculo;
     $("out").textContent = build();
