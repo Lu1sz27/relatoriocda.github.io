@@ -102,7 +102,7 @@ pre#out {
   <header class="top">
     <div>
       <h1>Gerador de Relatório</h1>
-      <p class="sub">Preencha só o que muda. O relatório aparece pronto ao lado, no mesmo formato do 1ºBPM-CA. Os campos já vêm com um exemplo de corrida ilegal; clique em Novo relatório para limpar. Na primeira vez, abra "Dados fixos" e coloque o seu nome.</p>
+      <p class="sub">Preencha só o que muda. O relatório aparece pronto ao lado, no mesmo formato do 1ºBPM-CA. Na primeira vez, abra "Dados fixos" e coloque o seu nome. Clique em Novo relatório para limpar os campos.</p>
     </div>
     <button type="button" id="btn-new">Novo relatório</button>
   </header>
@@ -129,7 +129,7 @@ pre#out {
         <h2>Ocorrência</h2>
         <div class="row">
           <label>Tipo de ocorrência (QRU)
-            <input type="text" id="f-ocorrencia" data-k="ocorrencia" list="dl-oc" autocomplete="off">
+            <input type="text" id="f-ocorrencia" data-k="ocorrencia" list="dl-oc" autocomplete="off" placeholder="Escolha ou digite a QRU">
           </label>
           <label>Origem da ocorrência
             <input type="text" id="f-origem" data-k="origem" list="dl-origem" autocomplete="off">
@@ -240,7 +240,7 @@ pre#out {
   <option value="Banco Fleeca"><option value="Banco de Paleto"><option value="Banco Central"><option value="Banco Roxwood">
   <option value="Laboratório Humane (Nióbio)"><option value="Ação de Rua"><option value="Guerra">
   <option value="Disparo de Arma de Fogo"><option value="Roubo de Veículo"><option value="Procurado">
-  <option value="Uso de Equipamento Restrito"><option value="Infração de Trânsito">
+  <option value="Uso de Equipamento Restrito"><option value="Infração de Trânsito"><option value="Desobediência">
 </datalist>
 <datalist id="dl-origem"><option value="central"><option value="denúncia por característica"><option value="fundada suspeita"><option value="flagrante"><option value="denúncia anônima"></datalist>
 <datalist id="dl-team"></datalist>
@@ -265,22 +265,12 @@ pre#out {
       relatorio: "", conducao: "", revVeic: "", apreVeic: ""
     };
   }
-  function example() {
-    var s = blank();
-    s.ocorrencia = "Corrida Ilegal"; s.localQru = "Cassino"; s.localFinal = "Galeria";
-    s.fugaVeic = true; s.inop = true; s.fugaPe = true;
-    s.modelo = "Sentinel VII"; s.placa = "ABC123"; s.dono = "Fulano de Tal"; s.cor = "Preta com neon Vermelho";
-    s.items = [{ q: 1, n: "chip ilegal" }];
-    s.revistaPor = "";
-    s.relatorio = s.me; s.conducao = ""; s.revVeic = s.me; s.apreVeic = s.me;
-    return s;
-  }
   function load() {
     try {
       var raw = localStorage.getItem(KEY);
       if (raw) { return Object.assign(blank(), JSON.parse(raw)); }
     } catch (e) {}
-    return example();
+    return blank();
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
 
@@ -324,7 +314,8 @@ pre#out {
     "roubo de veiculo": { c: "praticando roubo de veículo", v: true, cod: 2 },
     "procurado": { c: "sendo identificado como procurado", cod: 2 },
     "uso de equipamento restrito": { c: "utilizando equipamento restrito", cod: 2 },
-    "infracao de transito": { c: "cometendo infração de trânsito", v: true, cod: 1 }
+    "infracao de transito": { c: "cometendo infração de trânsito", v: true, cod: 1 },
+    "desobediencia": { c: "desobedecendo à ordem de parada", v: true }
   };
   var INTENS = {
     1: "baixa intensidade, Cód. 1",
@@ -333,6 +324,7 @@ pre#out {
   };
 
   function genRelato() {
+    if (!S.ocorrencia.trim()) return "";
     var oc = (S.ocorrencia || "ocorrência").trim();
     var q = QRU[norm(S.ocorrencia)] || null;
     var crime = q ? q.c : "cometendo o(s) referido(s) delito(s)";
@@ -342,9 +334,13 @@ pre#out {
     var vehMention = !!(q && q.v && !S.semVeiculo && modelo);
     var vp = vehMention ? " a bordo de um veículo " + modelo : "";
     var fin = S.localFinal.trim();
+    var isDes = norm(S.ocorrencia) === "desobediencia";
+    var NAOENC = S.semVeiculo ? "" : ", não encostando o veículo";
     var t;
 
-    if (org === "flagrante") {
+    if (isDes) {
+      t = "Durante o patrulhamento" + reg + ", demos ordem de parada ao(s) requerente(s)" + vp + ", por meio de aviso sonoro, luminoso e verbal.";
+    } else if (org === "flagrante") {
       t = "Durante o patrulhamento" + reg + ", flagramos o(s) requerente(s) " + crime + vp + (q ? "." : ", caracterizando uma QRU de " + oc + ".");
     } else if (org === "fundada suspeita") {
       t = "Durante o patrulhamento nas proximidades de uma QRU de " + oc + reg + ", identificamos o(s) requerente(s)" + vp + " em fundada suspeita de envolvimento " + (q ? "nessa ocorrência." : "no(s) referido(s) delito(s).");
@@ -358,16 +354,16 @@ pre#out {
 
     var peSemVeic = !S.fugaVeic && S.fugaPe;
     if (S.fugaVeic) {
-      t += " Após aviso sonoro, luminoso e verbal, o indivíduo empreendeu fuga.";
+      t += isDes ? " O indivíduo desobedeceu à ordem de parada" + (S.semVeiculo ? " e" : NAOENC + ", e") + " empreendeu fuga." : " Após aviso sonoro, luminoso e verbal, o indivíduo empreendeu fuga.";
       if (S.inop) {
         t += " Minutos depois, o mesmo ficou inoperante em seu veículo" + (modelo && !vehMention ? " " + modelo : "");
         if (fin) t += ", na região do " + fin;
         t += ".";
       }
     } else if (peSemVeic) {
-      t += " Após aviso sonoro, luminoso e verbal, o indivíduo não acatou a ordem de parada e iniciou tentativa de fuga a pé.";
+      t += isDes ? " O indivíduo desobedeceu à ordem de parada e iniciou tentativa de fuga a pé." : " Após aviso sonoro, luminoso e verbal, o indivíduo não acatou a ordem de parada e iniciou tentativa de fuga a pé.";
     } else {
-      t += " Após aviso sonoro, luminoso e verbal, o indivíduo acatou a ordem de parada.";
+      t += isDes ? " O indivíduo desobedeceu à ordem de parada" + NAOENC + ", sendo necessário acompanhamento até a sua imobilização." : " Após aviso sonoro, luminoso e verbal, o indivíduo acatou a ordem de parada.";
     }
     if (S.resgate) {
       var rs = S.resgates.map(function (r) { return r.modelo.trim(); }).filter(Boolean);
@@ -385,7 +381,7 @@ pre#out {
     } else if (S.fugaPe) {
       t += " Iniciou tentativa de fuga a pé, porém foi" + cap + " e conduzido até o departamento policial para prisão.";
     } else {
-      t += " O mesmo foi abordado" + (q && q.cod ? " (abordagem de " + INTENS[q.cod] + ")" : "") + " e conduzido até o departamento policial para prisão.";
+      t += (isDes ? " Após acompanhamento, o mesmo foi abordado" : " O mesmo foi abordado") + (q && q.cod ? " (abordagem de " + INTENS[q.cod] + ")" : "") + " e conduzido até o departamento policial para prisão.";
     }
 
     var its = S.items.filter(function (i) { return i.n.trim(); });
