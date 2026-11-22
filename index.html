@@ -320,7 +320,7 @@ pre#out {
 
       <section class="card">
         <h2>Veículos de apoio</h2>
-        <p class="hint" style="margin:0 0 4px">Veículos dos indivíduos que dão P.I.T nas viaturas e fecham o beco para as viaturas perderem o visual do veículo principal. Não são resgate. O manual permite no máximo 3 ao mesmo tempo.</p>
+        <p class="hint" style="margin:0 0 4px">Veículos dos indivíduos que dão P.I.T nas viaturas ou fecham o beco (marque se as viaturas perderam ou não o visual do veículo principal). Não são resgate. O manual permite no máximo 3 ao mesmo tempo.</p>
         <div id="b-apoio-list"></div>
         <div style="margin-top:8px"><button type="button" class="small" id="b-btn-add-apoio">+ Adicionar veículo de apoio</button></div>
       </section>
@@ -734,7 +734,7 @@ pre#out {
       relatorio: "", conducao: "", revVeic: "", apreVeic: ""
     };
   }
-  function novoApoio() { return { modelo: "", placa: "", dono: "", cor: "", pit: false, spike: false, beco: false }; }
+  function novoApoio() { return { modelo: "", placa: "", dono: "", cor: "", pit: false, spike: false, beco: false, perdeu: false }; }
   function loadB() {
     try {
       var raw = localStorage.getItem(BKEY);
@@ -745,7 +745,7 @@ pre#out {
   function saveB() { try { localStorage.setItem(BKEY, JSON.stringify(B)); } catch (e) {} }
   var B = loadB();
   if (!Array.isArray(B.items)) B.items = [];
-  B.apoios = (Array.isArray(B.apoios) ? B.apoios : []).slice(0, MAX_APOIO).map(function (a) { return Object.assign(novoApoio(), a); });
+  B.apoios = (Array.isArray(B.apoios) ? B.apoios : []).slice(0, MAX_APOIO).map(function (a) { var n = Object.assign(novoApoio(), a); if (a.beco && a.perdeu === undefined) n.perdeu = true; return n; });
 
   function bGenRelato() {
     if (!B.rank) return "";
@@ -780,7 +780,7 @@ pre#out {
       var partes = [];
       if (a.pit) partes.push("deu P.I.T nas viaturas");
       if (a.spike) partes.push("utilizou spike contra as viaturas");
-      if (a.beco) partes.push("fechou o beco, fazendo com que as viaturas perdessem o visual do veículo principal");
+      if (a.beco) partes.push(a.perdeu ? "fechou o beco, fazendo com que as viaturas perdessem o visual do veículo principal" : "fechou o beco, porém as viaturas não perderam o visual do veículo principal");
       var acao = partes.length ? joinE(partes) : null;
       if (acao) t += " Durante o acompanhamento, " + lab + " " + acao + ".";
     });
@@ -879,10 +879,10 @@ pre#out {
       });
       wrap.appendChild(row);
       var checks = document.createElement("div"); checks.className = "checks"; checks.style.marginTop = "10px";
-      [["pit", "Deu P.I.T nas viaturas"], ["spike", "Utilizou spike nas viaturas"], ["beco", "Fechou o beco (as viaturas perderam o visual do veículo principal)"]].forEach(function (c) {
+      [["pit", "Deu P.I.T nas viaturas"], ["spike", "Utilizou spike nas viaturas"], ["beco", "Fechou o beco"], ["perdeu", "As viaturas perderam o visual do veículo principal"]].forEach(function (c) {
         var lab = document.createElement("label"); lab.className = "check";
         var cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "apoio-" + idx + "-" + c[0]; cb.checked = !!a[c[0]];
-        cb.addEventListener("change", function () { a[c[0]] = cb.checked; bUpdate(); });
+        cb.addEventListener("change", function () { a[c[0]] = cb.checked; if (c[0] === "beco" && !cb.checked) { a.perdeu = false; var pc = document.getElementById("apoio-" + idx + "-perdeu"); if (pc) pc.checked = false; } if (c[0] === "perdeu" && cb.checked && !a.beco) { a.beco = true; var bc = document.getElementById("apoio-" + idx + "-beco"); if (bc) bc.checked = true; } bUpdate(); });
         lab.appendChild(cb); lab.appendChild(document.createTextNode(" " + c[1])); checks.appendChild(lab);
       });
       wrap.appendChild(checks);
@@ -993,6 +993,28 @@ pre#out {
     icone();
   });
   icone();
+})();
+</script>
+<script>
+(function () {
+  function cap(t) {
+    var m = /^(\s*)([\s\S]*)$/.exec(t);
+    var r = m[2].toLowerCase();
+    return m[1] + r.charAt(0).toUpperCase() + r.slice(1);
+  }
+  var PULAR = { "f-header": 1, "f-ocorrencia": 1, "f-origem": 1, "b-origem": 1, "f-relato": 1, "b-relato": 1 };
+  document.addEventListener("focusout", function (e) {
+    var el = e.target;
+    if (!el || !el.tagName || PULAR[el.id]) return;
+    var novo;
+    if (el.tagName === "INPUT" && el.type === "text") {
+      if (el.style.textTransform === "lowercase") return;
+      novo = cap(el.value);
+    } else if (el.tagName === "TEXTAREA") {
+      novo = el.id === "f-team" ? el.value.split("\n").map(cap).join("\n") : cap(el.value);
+    } else return;
+    if (novo !== el.value) { el.value = novo; el.dispatchEvent(new Event("input", { bubbles: true })); }
+  });
 })();
 </script>
 </body>
