@@ -284,7 +284,7 @@ pre#out {
           <div class="full checks">
             <label class="check"><input type="checkbox" id="b-pit" data-bk="pit"> Manobra P.I.T aplicada no veículo principal</label>
             <label class="check"><input type="checkbox" id="b-box" data-bk="box"> BOX aplicado (só nos ranks A e S)</label>
-            <label class="check"><input type="checkbox" id="b-spike" data-bk="spike"> Spike utilizada</label>
+            <label class="check"><input type="checkbox" id="b-spike" data-bk="spike"> Spike utilizada no veículo principal</label>
             <label class="check"><input type="checkbox" id="b-inop" data-bk="inop"> Veículo principal ficou inoperante (stall)</label>
             <label class="check"><input type="checkbox" id="b-fugaPe" data-bk="fugaPe"> Os indivíduos tentaram fuga a pé e foram capturados</label>
             <label class="check"><input type="checkbox" id="b-disparos" data-bk="disparos"> Houve disparos contra a guarnição</label>
@@ -734,7 +734,7 @@ pre#out {
       relatorio: "", conducao: "", revVeic: "", apreVeic: ""
     };
   }
-  function novoApoio() { return { modelo: "", placa: "", dono: "", cor: "", pit: false, beco: false }; }
+  function novoApoio() { return { modelo: "", placa: "", dono: "", cor: "", pit: false, spike: false, beco: false }; }
   function loadB() {
     try {
       var raw = localStorage.getItem(BKEY);
@@ -777,17 +777,18 @@ pre#out {
     t += " Após aviso sonoro, luminoso e verbal, o indivíduo empreendeu fuga com o veículo principal.";
     ap.forEach(function (a, i) {
       var lab = "o veículo de apoio" + (ap.length > 1 ? " " + (i + 1) : "") + (a.modelo.trim() ? " (" + a.modelo.trim() + ")" : "");
-      var acao = null;
-      if (a.pit && a.beco) acao = "deu P.I.T nas viaturas e fechou o beco, fazendo com que as viaturas perdessem o visual do veículo principal";
-      else if (a.pit) acao = "deu P.I.T nas viaturas";
-      else if (a.beco) acao = "fechou o beco, fazendo com que as viaturas perdessem o visual do veículo principal";
+      var partes = [];
+      if (a.pit) partes.push("deu P.I.T nas viaturas");
+      if (a.spike) partes.push("utilizou spike contra as viaturas");
+      if (a.beco) partes.push("fechou o beco, fazendo com que as viaturas perdessem o visual do veículo principal");
+      var acao = partes.length ? joinE(partes) : null;
       if (acao) t += " Durante o acompanhamento, " + lab + " " + acao + ".";
     });
 
     var acoes = [];
     if (B.pit) acoes.push("a manobra P.I.T");
     if (B.box) acoes.push("o BOX");
-    if (B.spike) acoes.push("a spike");
+    if (B.spike) acoes.push("a spike no veículo principal");
     if (acoes.length) t += " Para conter o veículo principal, foram utilizados: " + joinE(acoes) + ".";
     if (B.disparos) t += " Houve disparos contra a guarnição, configurando tentativa de homicídio.";
     if (B.inop) t += " O veículo principal ficou inoperante (stall)" + (fin ? ", na região do " + fin : "") + ".";
@@ -801,7 +802,7 @@ pre#out {
     if (its.length) {
       t += " Na revista, foi(ram) apreendido(s): " + its.map(function (i) { return (i.q || 1) + "x " + i.n.trim(); }).join(", ") + ".";
     }
-    t += " Ao final da ocorrência, o(s) indivíduo(s) responde(m) por velozes e furiosos" + (B.disparos ? " e por tentativa de homicídio" : "") + ".";
+    t += " Ao final da ocorrência, o(s) indivíduo(s) responde(m) por boosting" + (B.disparos ? " e por tentativa de homicídio" : "") + ".";
     return t;
   }
 
@@ -878,7 +879,7 @@ pre#out {
       });
       wrap.appendChild(row);
       var checks = document.createElement("div"); checks.className = "checks"; checks.style.marginTop = "10px";
-      [["pit", "Deu P.I.T nas viaturas"], ["beco", "Fechou o beco (as viaturas perderam o visual do veículo principal)"]].forEach(function (c) {
+      [["pit", "Deu P.I.T nas viaturas"], ["spike", "Utilizou spike nas viaturas"], ["beco", "Fechou o beco (as viaturas perderam o visual do veículo principal)"]].forEach(function (c) {
         var lab = document.createElement("label"); lab.className = "check";
         var cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "apoio-" + idx + "-" + c[0]; cb.checked = !!a[c[0]];
         cb.addEventListener("change", function () { a[c[0]] = cb.checked; bUpdate(); });
