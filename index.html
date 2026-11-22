@@ -56,6 +56,38 @@ details.card > summary { cursor: pointer; font-family: var(--font-display); font
 details.card[open] > summary { margin-bottom: 10px; }
 .sub-h { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: .06em; text-transform: uppercase; color: var(--badge); margin: 16px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: .65; }
+
+/* ---------- Início ---------- */
+.hm-hero { position: relative; overflow: hidden; border-radius: 8px; min-height: 480px; color: #f4efe4; isolation: isolate;
+  background: linear-gradient(180deg, #0a0f1e 0%, #1a2040 38%, #6b3a3a 70%, #d78a2f 100%); }
+.hm-city { position: absolute; inset: auto 0 0 0; width: 100%; height: 72%; z-index: -1; }
+.hm-body { padding: 40px clamp(20px, 5vw, 56px) 40px; max-width: 720px; }
+.hm-badge { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: .08em; color: #f0c867; }
+.hm-badge svg { width: 34px; height: 34px; flex: none; }
+.hm-hero h1 { font-size: clamp(2.4rem, 7vw, 4.4rem); line-height: .98; margin: 16px 0 14px; color: #fff8e8; text-shadow: 0 2px 24px rgba(5,8,18,.6); }
+.hm-lead { font-size: 1.1rem; max-width: 46ch; margin: 0 0 22px; color: #e9e1d0; text-shadow: 0 1px 14px rgba(5,8,18,.7); }
+.hm-cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.hm-btn { appearance: none; cursor: pointer; font-family: var(--font-body); font-weight: 600; font-size: 1rem; padding: 11px 20px; border-radius: 6px; border: 1.5px solid #f0c867; background: rgba(8,12,24,.55); color: #fff3d6; }
+.hm-btn.gold { background: #f0c867; color: #1a1306; }
+.hm-btn.hm-open { background: #0f1830; color: #fff3d6; }
+.hm-btn:hover { filter: brightness(1.08); }
+.hm-btn:focus-visible { outline: 3px solid #fff3d6; outline-offset: 2px; }
+.hm-sec { margin-top: 34px; }
+.hm-sec > h2 { font-size: 1.6rem; margin-bottom: 4px; }
+.hm-sec > p { color: var(--muted); margin: 0 0 14px; max-width: 62ch; }
+.hm-tools { border-top: 1px solid var(--line); }
+.hm-tool { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; align-items: center; padding: 16px 4px; border-bottom: 1px solid var(--line); }
+.hm-tool h3 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; letter-spacing: .03em; }
+.hm-tool p { margin: 0; color: var(--muted); grid-column: 1; }
+.hm-tool .hm-open { grid-column: 2; grid-row: 1 / span 2; }
+.hm-tag { display: inline-block; margin-left: 10px; font-family: var(--font-body); font-size: .8rem; font-weight: 600; letter-spacing: 0; vertical-align: middle; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--badge); color: var(--badge); }
+.hm-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; counter-reset: s; }
+.hm-steps li { counter-increment: s; border-left: 3px solid var(--badge); padding: 2px 0 2px 14px; }
+.hm-steps li::before { content: counter(s); font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; color: var(--badge); display: block; line-height: 1; }
+.hm-steps b { display: block; margin: 4px 0 2px; }
+.hm-steps span { color: var(--muted); }
+.hm-note { margin-top: 30px; color: var(--muted); font-size: .9rem; }
+@media (max-width: 700px) { .hm-steps { grid-template-columns: minmax(0, 1fr); } .hm-hero { min-height: 520px; } .hm-tool { grid-template-columns: minmax(0, 1fr); } .hm-tool .hm-open { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 8px; } }
 .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
 .theme-btn { margin-left: auto; align-self: center; padding: 6px 12px; font-size: 1rem; line-height: 1; }
 .tab { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 10px 16px; margin-bottom: -1px; font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; letter-spacing: .03em; color: var(--muted); }
@@ -112,13 +144,50 @@ pre#out {
 <body>
 <div class="wrap">
   <nav class="tabs" role="tablist" aria-label="Seções do site">
-    <button type="button" class="tab" role="tab" id="tab-btn-relatorio" data-tab="relatorio" aria-controls="tab-relatorio" aria-selected="true">Relatório</button>
+    <button type="button" class="tab" role="tab" id="tab-btn-inicio" data-tab="inicio" aria-controls="tab-inicio" aria-selected="true">Início</button>
+    <button type="button" class="tab" role="tab" id="tab-btn-relatorio" data-tab="relatorio" aria-controls="tab-relatorio" aria-selected="false">Relatório</button>
     <button type="button" class="tab" role="tab" id="tab-btn-boosting" data-tab="boosting" aria-controls="tab-boosting" aria-selected="false">Boosting</button>
     <button type="button" class="tab" role="tab" id="tab-btn-corridas" data-tab="corridas" aria-controls="tab-corridas" aria-selected="false">Corridas</button>
     <button type="button" class="small theme-btn" id="btn-theme" aria-label="Alternar tema claro/escuro" title="Alternar tema claro/escuro">🌙</button>
   </nav>
 
-  <section id="tab-relatorio" role="tabpanel" aria-labelledby="tab-btn-relatorio">
+  <section id="tab-inicio" role="tabpanel" aria-labelledby="tab-btn-inicio" hidden>
+    <div class="hm-hero">
+      <svg class="hm-city" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false"><defs><radialGradient id="hmSun"><stop offset="0" stop-color="#ffd98a"/><stop offset=".45" stop-color="#f0a53c" stop-opacity=".55"/><stop offset="1" stop-color="#f0a53c" stop-opacity="0"/></radialGradient></defs><circle cx="860" cy="300" r="190" fill="url(#hmSun)"/><g fill="#3a2c3e" opacity="0.9"><rect x="-10" y="311" width="48" height="89"/><rect x="38" y="225" width="32" height="175"/><rect x="72" y="214" width="31" height="186"/><rect x="103" y="275" width="33" height="125"/><rect x="137" y="260" width="33" height="140"/><rect x="176" y="302" width="35" height="98"/><rect x="215" y="257" width="31" height="143"/><rect x="246" y="325" width="42" height="75"/><rect x="289" y="277" width="46" height="123"/><rect x="311" y="260" width="2" height="40"/><rect x="339" y="259" width="47" height="141"/><rect x="387" y="256" width="34" height="144"/><rect x="422" y="318" width="51" height="82"/><rect x="473" y="251" width="31" height="149"/><rect x="487" y="220" width="2" height="40"/><rect x="507" y="271" width="48" height="129"/><rect x="558" y="292" width="51" height="108"/><rect x="610" y="320" width="43" height="80"/><rect x="657" y="218" width="59" height="182"/><rect x="719" y="253" width="46" height="147"/><rect x="765" y="277" width="60" height="123"/><rect x="794" y="253" width="2" height="40"/><rect x="826" y="277" width="59" height="123"/><rect x="854" y="261" width="2" height="40"/><rect x="891" y="287" width="48" height="113"/><rect x="943" y="256" width="59" height="144"/><rect x="1002" y="210" width="33" height="190"/><rect x="1040" y="323" width="32" height="77"/><rect x="1074" y="294" width="56" height="106"/><rect x="1135" y="328" width="50" height="72"/><rect x="1187" y="252" width="38" height="148"/><rect x="1205" y="237" width="2" height="40"/></g><g fill="#1b1a2e" opacity="1"><rect x="-10" y="334" width="48" height="66"/><rect x="41" y="287" width="55" height="113"/><rect x="67" y="259" width="2" height="40"/><rect x="99" y="315" width="65" height="85"/><rect x="170" y="280" width="57" height="120"/><rect x="230" y="263" width="52" height="137"/><rect x="283" y="340" width="39" height="60"/><rect x="301" y="319" width="2" height="40"/><rect x="327" y="349" width="44" height="51"/><rect x="375" y="317" width="41" height="83"/><rect x="417" y="282" width="56" height="118"/><rect x="477" y="334" width="50" height="66"/><rect x="531" y="267" width="69" height="133"/><rect x="600" y="251" width="59" height="149"/><rect x="664" y="300" width="65" height="100"/><rect x="732" y="289" width="36" height="111"/><rect x="768" y="342" width="42" height="58"/><rect x="813" y="336" width="40" height="64"/><rect x="853" y="350" width="36" height="50"/><rect x="893" y="304" width="36" height="96"/><rect x="929" y="272" width="43" height="128"/><rect x="977" y="306" width="46" height="94"/><rect x="1026" y="336" width="37" height="64"/><rect x="1066" y="289" width="60" height="111"/><rect x="1127" y="255" width="36" height="145"/><rect x="1165" y="262" width="60" height="138"/><rect x="1194" y="248" width="2" height="40"/></g><g fill="#0b0f1c" opacity="1"><rect x="-10" y="324" width="69" height="76"/><rect x="60" y="301" width="80" height="99"/><rect x="140" y="303" width="84" height="97"/><rect x="226" y="359" width="77" height="41"/><rect x="308" y="304" width="52" height="96"/><rect x="362" y="325" width="46" height="75"/><rect x="414" y="302" width="50" height="98"/><rect x="468" y="328" width="68" height="72"/><rect x="541" y="346" width="50" height="54"/><rect x="597" y="319" width="51" height="81"/><rect x="653" y="345" width="50" height="55"/><rect x="707" y="325" width="67" height="75"/><rect x="779" y="367" width="37" height="33"/><rect x="822" y="310" width="53" height="90"/><rect x="877" y="326" width="48" height="74"/><rect x="928" y="326" width="82" height="74"/><rect x="1012" y="342" width="41" height="58"/><rect x="1053" y="310" width="50" height="90"/><rect x="1104" y="344" width="57" height="56"/><rect x="1164" y="370" width="75" height="30"/></g><g fill="#f3c969" opacity=".75"><rect x="704" y="281" width="3" height="4"/><rect x="245" y="359" width="3" height="4"/><rect x="408" y="382" width="3" height="4"/><rect x="365" y="371" width="3" height="4"/><rect x="680" y="282" width="3" height="4"/><rect x="810" y="378" width="3" height="4"/><rect x="822" y="281" width="3" height="4"/><rect x="325" y="303" width="3" height="4"/><rect x="260" y="267" width="3" height="4"/><rect x="309" y="379" width="3" height="4"/><rect x="299" y="381" width="3" height="4"/><rect x="717" y="299" width="3" height="4"/><rect x="1123" y="293" width="3" height="4"/><rect x="43" y="263" width="3" height="4"/><rect x="210" y="394" width="3" height="4"/><rect x="285" y="371" width="3" height="4"/><rect x="398" y="314" width="3" height="4"/><rect x="57" y="324" width="3" height="4"/><rect x="435" y="334" width="3" height="4"/><rect x="1026" y="321" width="3" height="4"/><rect x="667" y="326" width="3" height="4"/><rect x="1114" y="367" width="3" height="4"/><rect x="268" y="275" width="3" height="4"/><rect x="724" y="377" width="3" height="4"/><rect x="1194" y="392" width="3" height="4"/><rect x="861" y="388" width="3" height="4"/><rect x="267" y="298" width="3" height="4"/><rect x="1072" y="390" width="3" height="4"/><rect x="38" y="372" width="3" height="4"/><rect x="375" y="261" width="3" height="4"/><rect x="306" y="304" width="3" height="4"/><rect x="289" y="381" width="3" height="4"/><rect x="246" y="275" width="3" height="4"/><rect x="667" y="392" width="3" height="4"/><rect x="1086" y="383" width="3" height="4"/><rect x="217" y="274" width="3" height="4"/><rect x="508" y="308" width="3" height="4"/><rect x="567" y="270" width="3" height="4"/><rect x="200" y="389" width="3" height="4"/><rect x="926" y="267" width="3" height="4"/><rect x="129" y="373" width="3" height="4"/><rect x="666" y="389" width="3" height="4"/><rect x="1048" y="311" width="3" height="4"/><rect x="567" y="375" width="3" height="4"/><rect x="1040" y="382" width="3" height="4"/><rect x="1039" y="323" width="3" height="4"/><rect x="1071" y="326" width="3" height="4"/><rect x="1145" y="311" width="3" height="4"/><rect x="916" y="295" width="3" height="4"/><rect x="853" y="291" width="3" height="4"/><rect x="803" y="373" width="3" height="4"/><rect x="647" y="278" width="3" height="4"/><rect x="492" y="369" width="3" height="4"/><rect x="149" y="314" width="3" height="4"/><rect x="620" y="291" width="3" height="4"/><rect x="316" y="353" width="3" height="4"/><rect x="292" y="324" width="3" height="4"/><rect x="281" y="379" width="3" height="4"/><rect x="449" y="284" width="3" height="4"/><rect x="815" y="384" width="3" height="4"/><rect x="333" y="317" width="3" height="4"/><rect x="330" y="370" width="3" height="4"/><rect x="1055" y="363" width="3" height="4"/><rect x="694" y="367" width="3" height="4"/><rect x="400" y="351" width="3" height="4"/><rect x="652" y="283" width="3" height="4"/><rect x="749" y="264" width="3" height="4"/><rect x="692" y="377" width="3" height="4"/><rect x="902" y="264" width="3" height="4"/><rect x="787" y="344" width="3" height="4"/></g></svg>
+      <div class="hm-body">
+        <span class="hm-badge"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 35 8v11c0 9-6 16-15 19C11 35 5 28 5 19V8z" fill="#0b0f1c" stroke="#f0c867" stroke-width="2"/><path d="M20 10l2.6 5.4 5.9.8-4.3 4.1 1 5.9L20 23.4 14.8 26.2l1-5.9-4.3-4.1 5.9-.8z" fill="#f0c867"/></svg>1ºBPM-CA · Cidade Alta</span>
+        <h1>Servir e proteger a Cidade Alta.</h1>
+        <p class="hm-lead">Ferramentas do 1º Batalhão de Polícia Militar para montar os relatórios das ocorrências sem perder tempo.</p>
+        <div class="hm-cta">
+          <button type="button" class="hm-btn gold" data-goto="relatorio">Fazer um relatório</button>
+          <button type="button" class="hm-btn" data-goto="boosting">Relatório de boosting</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hm-sec">
+      <h2>Ferramentas</h2>
+      <p>Cada aba monta um tipo de relatório no mesmo padrão do batalhão.</p>
+      <div class="hm-tools">
+      <div class="hm-tool"><h3>Gerador de relatório</h3><p>Escolha a QRU e a origem, preencha o veículo e os envolvidos, e copie o relatório pronto.</p><button type="button" class="hm-btn hm-open" data-goto="relatorio">Abrir</button></div>
+      <div class="hm-tool"><h3>Boosting</h3><p>Relatório de boosting por rank, com veículo principal e até 3 veículos de apoio.</p><button type="button" class="hm-btn hm-open" data-goto="boosting">Abrir</button></div>
+      <div class="hm-tool"><h3>Corridas<span class="hm-tag">Em manutenção</span></h3><p>Consulta das corridas da cidade.</p><button type="button" class="hm-btn hm-open" data-goto="corridas">Abrir</button></div>
+      </div>
+    </div>
+
+    <div class="hm-sec">
+      <h2>Como usar</h2>
+      <ol class="hm-steps">
+        <li><b>Preencha</b><span>Escolha o tipo de ocorrência e complete os campos. O relato se monta sozinho.</span></li>
+        <li><b>Confira</b><span>O relatório pronto aparece ao lado. Dá para editar o relato à mão.</span></li>
+        <li><b>Copie</b><span>Clique em "Copiar relatório" e cole onde precisar.</span></li>
+      </ol>
+    </div>
+
+    <p class="hm-note">O que você preenche fica salvo só neste navegador e neste aparelho.</p>
+  </section>
+
+  <section id="tab-relatorio" role="tabpanel" aria-labelledby="tab-btn-relatorio" hidden>
   <header class="top">
     <div>
       <h1>Gerador de Relatório</h1>
@@ -972,9 +1041,9 @@ pre#out {
   renderChipsB(); renderItemsB(); renderApoios(); bSync(); bUpdate();
 
 
-  var TABS = ["relatorio", "boosting", "corridas"];
+  var TABS = ["inicio", "relatorio", "boosting", "corridas"];
   function showTab(name) {
-    if (TABS.indexOf(name) < 0) name = "relatorio";
+    if (TABS.indexOf(name) < 0) name = "inicio";
     TABS.forEach(function (t) {
       var on = t === name;
       $("tab-" + t).hidden = !on;
@@ -984,6 +1053,9 @@ pre#out {
   }
   document.querySelectorAll(".tab").forEach(function (b) {
     b.addEventListener("click", function () { showTab(b.dataset.tab); });
+  });
+  document.querySelectorAll("[data-goto]").forEach(function (b) {
+    b.addEventListener("click", function () { showTab(b.dataset.goto); window.scrollTo(0, 0); });
   });
   showTab((location.hash || "").slice(1));
 })();
