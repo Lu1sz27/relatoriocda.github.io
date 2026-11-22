@@ -57,6 +57,7 @@ details.card[open] > summary { margin-bottom: 10px; }
 .sub-h { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: .06em; text-transform: uppercase; color: var(--badge); margin: 16px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: .65; }
 .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+.theme-btn { margin-left: auto; align-self: center; padding: 6px 12px; font-size: 1rem; line-height: 1; }
 .tab { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 10px 16px; margin-bottom: -1px; font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; letter-spacing: .03em; color: var(--muted); }
 .tab:hover { color: var(--fg); border-color: transparent; }
 .tab[aria-selected="true"] { color: var(--badge); border-bottom-color: var(--badge); }
@@ -102,12 +103,18 @@ pre#out {
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
+<script>
+(function () {
+  try { var t = localStorage.getItem("relatorio-1bpm-tema"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+})();
+</script>
 </head>
 <body>
 <div class="wrap">
   <nav class="tabs" role="tablist" aria-label="Seções do site">
     <button type="button" class="tab" role="tab" id="tab-btn-relatorio" data-tab="relatorio" aria-controls="tab-relatorio" aria-selected="true">Relatório</button>
     <button type="button" class="tab" role="tab" id="tab-btn-boosting" data-tab="boosting" aria-controls="tab-boosting" aria-selected="false">Boosting</button>
+    <button type="button" class="small theme-btn" id="btn-theme" aria-label="Alternar tema claro/escuro" title="Alternar tema claro/escuro">🌙</button>
   </nav>
 
   <section id="tab-relatorio" role="tabpanel" aria-labelledby="tab-btn-relatorio">
@@ -967,6 +974,24 @@ pre#out {
     b.addEventListener("click", function () { showTab(b.dataset.tab); });
   });
   showTab((location.hash || "").slice(1));
+})();
+</script>
+<script>
+(function () {
+  var btn = document.getElementById("btn-theme");
+  function atual() {
+    var t = document.documentElement.getAttribute("data-theme");
+    if (t) return t;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  function icone() { btn.textContent = atual() === "dark" ? "☀️" : "🌙"; }
+  btn.addEventListener("click", function () {
+    var n = atual() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", n);
+    try { localStorage.setItem("relatorio-1bpm-tema", n); } catch (e) {}
+    icone();
+  });
+  icone();
 })();
 </script>
 </body>
