@@ -69,6 +69,8 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: .65; }
 .hm-cta { display: flex; flex-wrap: wrap; gap: 10px; }
 .hm-btn { appearance: none; cursor: pointer; font-family: var(--font-body); font-weight: 600; font-size: 1rem; padding: 11px 20px; border-radius: 8px; border: 1.5px solid #12203a; background: rgba(255,255,255,.65); color: #12203a; }
 .hm-btn.gold { background: #12203a; color: #ffffff; }
+.hm-tool .hm-btn.hm-open { background: transparent; color: var(--fg); border: 1.5px solid var(--badge); }
+.hm-tool .hm-btn.hm-open:hover { background: var(--surface); }
 .hm-btn:hover { filter: brightness(1.06); }
 .hm-btn:focus-visible { outline: 3px solid #e0a82e; outline-offset: 2px; }
 .hm-heli { display: block; width: 100%; height: auto; margin-top: -26px; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 30%); mask-image: linear-gradient(180deg, transparent 0, #000 30%); }
