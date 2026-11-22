@@ -114,6 +114,7 @@ pre#out {
   <nav class="tabs" role="tablist" aria-label="Seções do site">
     <button type="button" class="tab" role="tab" id="tab-btn-relatorio" data-tab="relatorio" aria-controls="tab-relatorio" aria-selected="true">Relatório</button>
     <button type="button" class="tab" role="tab" id="tab-btn-boosting" data-tab="boosting" aria-controls="tab-boosting" aria-selected="false">Boosting</button>
+    <button type="button" class="tab" role="tab" id="tab-btn-corridas" data-tab="corridas" aria-controls="tab-corridas" aria-selected="false">Corridas</button>
     <button type="button" class="small theme-btn" id="btn-theme" aria-label="Alternar tema claro/escuro" title="Alternar tema claro/escuro">🌙</button>
   </nav>
 
@@ -376,7 +377,150 @@ pre#out {
     </div>
   </div>
   </section>
+
+  <section id="tab-corridas" role="tabpanel" aria-labelledby="tab-btn-corridas" hidden>
+  <header class="top">
+    <div>
+      <h1>Corridas</h1>
+      <p class="sub">Relatório de corrida ilegal em que as viaturas se adiantam para pegar o primeiro colocado. O título, o seu nome e a equipe são os "Dados fixos" da aba Relatório.</p>
+    </div>
+    <button type="button" id="c-btn-new">Nova corrida</button>
+  </header>
+  <div class="grid">
+    <div class="form">
+
+      <section class="card">
+        <h2>Corrida</h2>
+        <div class="row">
+          <label class="full">Nome da corrida
+            <input type="text" id="c-corrida" data-ck="corrida" list="dl-corridas" autocomplete="off" placeholder="Escolha ou digite a corrida (ex.: Afterdark)">
+          </label>
+          <label>Tipo
+            <select id="c-tipo" data-ck="tipo">
+              <option value="">Escolha o tipo</option>
+              <option value="lap">Lap</option><option value="sprint">Sprint</option>
+            </select>
+          </label>
+          <label>Voltas
+            <input type="number" min="1" id="c-voltas" data-ck="voltas" placeholder="Só para Lap">
+          </label>
+          <label>Checkpoints
+            <input type="number" min="1" id="c-checkpoints" data-ck="checkpoints" placeholder="Ex.: 91">
+          </label>
+        </div>
+        <p class="hint">Ao escolher uma corrida da lista, o tipo, as voltas e os checkpoints são preenchidos sozinhos. Para as outras, digite à mão.</p>
+      </section>
+
+      <section class="card">
+        <h2>Ocorrência</h2>
+        <div class="row">
+          <label>Origem da ocorrência
+            <input type="text" id="c-origem" data-ck="origem" list="dl-origem" autocomplete="off" placeholder="Ex.: central ou flagrante">
+          </label>
+          <label>Onde iniciou a ocorrência
+            <input type="text" id="c-localQru" data-ck="localQru" autocomplete="off" placeholder="Região onde iniciou (ex.: Cassino)">
+          </label>
+          <label>Onde as viaturas se adiantaram
+            <input type="text" id="c-adiantou" data-ck="adiantou" autocomplete="off" placeholder="Região onde esperaram o 1º colocado">
+          </label>
+          <label>Onde finalizou a ocorrência
+            <input type="text" id="c-localFinal" data-ck="localFinal" autocomplete="off" placeholder="Região onde finalizou (ex.: Galeria)">
+          </label>
+          <div class="full checks">
+            <label class="check"><input type="checkbox" id="c-fuga" data-ck="fuga"> O primeiro colocado fugiu de carro</label>
+            <label class="check"><input type="checkbox" id="c-pit" data-ck="pit"> Manobra P.I.T aplicada</label>
+            <label class="check"><input type="checkbox" id="c-spike" data-ck="spike"> Spike utilizada</label>
+            <label class="check"><input type="checkbox" id="c-inop" data-ck="inop"> Veículo ficou inoperante (stall)</label>
+            <label class="check"><input type="checkbox" id="c-fugaPe" data-ck="fugaPe"> Tentou fuga a pé e foi capturado</label>
+            <label class="check"><input type="checkbox" id="c-disparos" data-ck="disparos"> Houve disparos contra a guarnição</label>
+          </div>
+          <label class="full">Relato (pode editar à mão)
+            <textarea id="c-relato" data-ck="relato" rows="8" placeholder="O relato aparece aqui depois que você escolher a corrida. Você pode editar à mão."></textarea>
+          </label>
+          <div class="full relato-tools">
+            <span class="hint" id="c-relato-state">Texto montado automaticamente pelos campos acima.</span>
+            <button type="button" class="small" id="c-btn-regen" hidden>Montar de novo</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Veículo do primeiro colocado</h2>
+        <div class="row">
+          <label>Modelo
+            <input type="text" id="c-modelo" data-ck="modelo" autocomplete="off" placeholder="Modelo do veículo">
+          </label>
+          <label>Placa
+            <input type="text" id="c-placa" data-ck="placa" autocomplete="off" style="text-transform:lowercase" placeholder="Placa do veículo">
+          </label>
+          <label>Dono
+            <input type="text" id="c-dono" data-ck="dono" autocomplete="off" placeholder="Proprietário do veículo">
+          </label>
+          <label>Cor e características
+            <input type="text" id="c-cor" data-ck="cor" autocomplete="off" placeholder="Ex.: Preta com neon Vermelho">
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Objetos apreendidos</h2>
+        <div class="items" id="c-items"></div>
+        <div class="chips" id="c-chips" aria-label="Itens comuns"></div>
+        <p class="hint">Clique num item comum para adicionar. Deixe a lista vazia se nada foi apreendido.</p>
+        <div style="margin-top:8px"><button type="button" class="small" id="c-btn-add-item">+ Outro item</button></div>
+      </section>
+
+      <section class="card">
+        <h2>Observações</h2>
+        <div class="row">
+          <label class="full">Revista pessoal feita por
+            <input type="text" id="c-revistaPor" data-ck="revistaPor" list="dl-team" autocomplete="off" placeholder="Nome de quem fez a revista">
+          </label>
+          <label class="full">Outras observações (opcional)
+            <textarea id="c-obsExtra" data-ck="obsExtra" rows="2" placeholder="Alguma observação a mais sobre a ocorrência"></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Responsabilidades</h2>
+        <div class="row">
+          <label class="full">Relatório
+            <span class="with-me"><input type="text" id="c-relatorio" data-ck="relatorio" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-cme="relatorio">Eu</button></span>
+          </label>
+          <label class="full">Condução
+            <span class="with-me"><input type="text" id="c-conducao" data-ck="conducao" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-cme="conducao">Eu</button></span>
+          </label>
+          <label class="full">Revista do veículo
+            <span class="with-me"><input type="text" id="c-revVeic" data-ck="revVeic" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-cme="revVeic">Eu</button></span>
+          </label>
+          <label class="full">Apreensão do veículo
+            <span class="with-me"><input type="text" id="c-apreVeic" data-ck="apreVeic" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-cme="apreVeic">Eu</button></span>
+          </label>
+        </div>
+      </section>
+    </div>
+
+    <div class="preview-col">
+      <div class="out-head">
+        <h2>Relatório pronto</h2>
+        <div class="actions">
+          <span id="c-toast" role="status" aria-live="polite"></span>
+          <button type="button" class="primary" id="c-btn-copy">Copiar relatório</button>
+        </div>
+      </div>
+      <pre id="c-out"></pre>
+    </div>
+  </div>
+  
+  </section>
 </div>
+
+<datalist id="dl-corridas">
+  <option value="10-80"><option value="Afterdark"><option value="Afterglow"><option value="Aftershock"><option value="Air Docks">
+  <option value="Anphibian"><option value="Apex Predator"><option value="Banham GP"><option value="BBD Breeze"><option value="Been Banned">
+  <option value="Blackout"><option value="Buccaner Driver"><option value="Calafia Run"><option value="Canyon Touge"><option value="Carry Out">
+</datalist>
 
 <datalist id="dl-oc">
   <option value="Corrida Ilegal"><option value="Tráfico de Drogas"><option value="Boosting"><option value="Sequestro">
@@ -961,7 +1105,186 @@ pre#out {
   });
   renderChipsB(); renderItemsB(); renderApoios(); bSync(); bUpdate();
 
-  var TABS = ["relatorio", "boosting"];
+
+  /* ---------- Aba Corridas ---------- */
+  var CKEY = "relatorio-1bpm-corridas-v1";
+  var CORRIDAS = {
+    "10-80": ["lap", 44, 3], "afterdark": ["sprint", 91], "afterglow": ["sprint", 109], "aftershock": ["lap", 48, 3],
+    "air docks": ["sprint", 94], "anphibian": ["lap", 32, 4], "apex predator": ["sprint", 71], "banham gp": ["lap", 54, 2],
+    "bbd breeze": ["lap", 40, 3], "been banned": ["sprint", 109], "blackout": ["lap", 46, 3], "buccaner driver": ["sprint", 80],
+    "calafia run": ["sprint", 119], "canyon touge": ["lap", 84, 2], "carry out": ["lap", 54, 3]
+  };
+  function blankC() {
+    return {
+      corrida: "", tipo: "", voltas: "", checkpoints: "",
+      origem: "", localQru: "", adiantou: "", localFinal: "",
+      fuga: false, pit: false, spike: false, inop: false, fugaPe: false, disparos: false,
+      relato: "", relatoManual: false,
+      modelo: "", placa: "", dono: "", cor: "",
+      items: [], revistaPor: "", obsExtra: "",
+      relatorio: "", conducao: "", revVeic: "", apreVeic: ""
+    };
+  }
+  function loadC() {
+    try { var raw = localStorage.getItem(CKEY); if (raw) return Object.assign(blankC(), JSON.parse(raw)); } catch (e) {}
+    return blankC();
+  }
+  function saveC() { try { localStorage.setItem(CKEY, JSON.stringify(C)); } catch (e) {} }
+  var C = loadC();
+  if (!Array.isArray(C.items)) C.items = [];
+
+  function cGenRelato() {
+    var nome = String(C.corrida).trim();
+    if (!nome) return "";
+    var desc = ' "' + nome + '"';
+    var cp = String(C.checkpoints).trim(), vt = String(C.voltas).trim();
+    if (C.tipo === "lap") desc += " (modalidade Lap" + (vt ? ", " + vt + " volta" + (vt === "1" ? "" : "s") : "") + (cp ? ", " + cp + " checkpoints" : "") + ")";
+    else if (C.tipo === "sprint") desc += " (modalidade Sprint" + (cp ? ", " + cp + " checkpoints" : "") + ")";
+    var reg = C.localQru.trim() ? " na região do " + C.localQru.trim() : "";
+    var org = norm(C.origem);
+    var crime = "participando de uma corrida ilegal" + desc;
+    var crimeCurto = "participando da corrida ilegal";
+    var t;
+    if (org === "flagrante") {
+      t = "Durante o patrulhamento" + reg + ", flagramos o(s) requerente(s) " + crime + ".";
+    } else if (org === "fundada suspeita") {
+      t = "Durante o patrulhamento nas proximidades de uma QRU de corrida ilegal" + desc + reg + ", identificamos o(s) requerente(s) em fundada suspeita de participação nessa ocorrência.";
+    } else if (org === "denuncia por caracteristica") {
+      t = "Recebemos uma denúncia (via central), de uma QRU de corrida ilegal" + desc + reg + ", com as características dos veículos. Durante o patrulhamento, localizamos o(s) requerente(s) correspondente(s) às características informadas.";
+    } else if (org === "denuncia anonima") {
+      t = "Recebemos uma denúncia anônima, de uma QRU de corrida ilegal" + desc + reg + ". Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crimeCurto + ".";
+    } else {
+      t = "Recebemos uma denúncia" + (C.origem.trim() ? " (via " + C.origem.trim() + ")" : "") + ", de uma QRU de corrida ilegal" + desc + reg + ". Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crimeCurto + ".";
+    }
+    var adi = C.adiantou.trim();
+    t += " Para interceptar o primeiro colocado, as viaturas se adiantaram" + (adi ? " até a região do " + adi : " pelo percurso da corrida") + ".";
+    var modelo = C.modelo.trim();
+    var vp = modelo ? "O primeiro colocado, a bordo de um veículo " + modelo + ", " : "O primeiro colocado ";
+    var fin = C.localFinal.trim();
+    var onde = fin ? " na região do " + fin : "";
+    if (C.fuga) {
+      t += " " + vp + "ao receber o aviso sonoro, luminoso e verbal, empreendeu fuga com o veículo.";
+    } else {
+      t += " " + vp + "após aviso sonoro, luminoso e verbal, acatou a ordem de parada.";
+    }
+    var acoes = [];
+    if (C.pit) acoes.push("a manobra P.I.T");
+    if (C.spike) acoes.push("a spike");
+    if (acoes.length) t += " Para conter o veículo, foram utilizados: " + joinE(acoes) + ".";
+    if (C.disparos) t += " Houve disparos contra a guarnição, configurando tentativa de homicídio.";
+    if (C.inop) t += " O veículo ficou inoperante (stall)" + (C.fuga ? onde : "") + ".";
+    if (C.fugaPe) {
+      t += " O indivíduo desembarcou e tentou fuga a pé, porém foi capturado" + onde + " e conduzido até o departamento policial para prisão.";
+    } else {
+      t += " O indivíduo foi abordado" + onde + " e conduzido até o departamento policial para prisão.";
+    }
+    var its = C.items.filter(function (i) { return i.n.trim(); });
+    if (its.length) t += " Na revista, foi(ram) apreendido(s): " + its.map(function (i) { return (i.q || 1) + "x " + i.n.trim(); }).join(", ") + ".";
+    t += " Ao final da ocorrência, o indivíduo responde por corrida ilegal" + (C.disparos ? " e por tentativa de homicídio" : "") + ".";
+    return t;
+  }
+  function cBuild() {
+    var L = [];
+    L.push(S.header.trim()); L.push("");
+    L.push("📝RELATO:"); L.push(C.relato.trim()); L.push("");
+    bVeiculo(L, "🚗 VEÍCULO DO PRIMEIRO COLOCADO", C);
+    L.push("📦 OBJETOS APREENDIDOS:");
+    var its = C.items.filter(function (i) { return i.n.trim(); });
+    if (its.length) { its.forEach(function (i) { L.push((i.q || 1) + "x " + i.n.trim()); }); } else { L.push("Nada apreendido"); }
+    L.push(""); L.push("⚠️ OBSERVAÇÕES:");
+    var obs = [];
+    if (C.revistaPor.trim()) obs.push("Revista ficou por parte do " + C.revistaPor.trim());
+    if (C.obsExtra.trim()) obs.push(C.obsExtra.trim());
+    L.push(obs.length ? obs.join("\n") : "Sem observações"); L.push("");
+    L.push("👮‍♂️ RESPONSABILIDADES:");
+    L.push("→ Relatório: " + C.relatorio.trim());
+    L.push("→ Conducao: " + C.conducao.trim());
+    L.push("→ Revista do veículo: " + C.revVeic.trim());
+    L.push("→ Apreensão do veículo: " + C.apreVeic.trim());
+    return L.join("\n");
+  }
+  function cUpdate() {
+    $("c-voltas").disabled = C.tipo === "sprint";
+    if (C.tipo === "sprint") C.voltas = "";
+    if (C.tipo === "sprint") $("c-voltas").value = "";
+    if (!C.relatoManual) { C.relato = cGenRelato(); $("c-relato").value = C.relato; }
+    $("c-btn-regen").hidden = !C.relatoManual;
+    $("c-relato-state").textContent = C.relatoManual ? "Você editou o relato à mão. Mudar os campos acima não altera mais esse texto." : "Texto montado automaticamente pelos campos acima.";
+    $("c-out").textContent = cBuild();
+    saveC();
+  }
+  function cSync() {
+    document.querySelectorAll("[data-ck]").forEach(function (el) {
+      var k = el.dataset.ck;
+      if (el.type === "checkbox") el.checked = !!C[k]; else el.value = C[k] == null ? "" : C[k];
+    });
+  }
+  function renderItemsC() {
+    var box = $("c-items"); box.innerHTML = "";
+    C.items.forEach(function (it, idx) {
+      var row = document.createElement("div"); row.className = "item";
+      var q = document.createElement("input"); q.type = "number"; q.min = "1"; q.value = it.q; q.setAttribute("aria-label", "Quantidade"); q.id = "c-qty-" + idx;
+      q.addEventListener("input", function () { it.q = parseInt(q.value, 10) || 1; cUpdate(); });
+      var n = document.createElement("input"); n.type = "text"; n.value = it.n; n.setAttribute("aria-label", "Item"); n.id = "c-name-" + idx; n.autocomplete = "off"; n.placeholder = "Objeto apreendido (ex.: chip ilegal)";
+      n.addEventListener("input", function () { it.n = n.value; cUpdate(); });
+      var x = document.createElement("button"); x.type = "button"; x.className = "small"; x.textContent = "Remover";
+      x.addEventListener("click", function () { C.items.splice(idx, 1); renderItemsC(); cUpdate(); });
+      row.appendChild(q); row.appendChild(n); row.appendChild(x); box.appendChild(row);
+    });
+  }
+  function renderChipsC() {
+    var c = $("c-chips");
+    COMMON.forEach(function (name) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = "+ " + name;
+      b.addEventListener("click", function () {
+        var found = C.items.filter(function (i) { return i.n.toLowerCase() === name.toLowerCase(); })[0];
+        if (found) found.q = (found.q || 1) + 1; else C.items.push({ q: 1, n: name });
+        renderItemsC(); cUpdate();
+      });
+      c.appendChild(b);
+    });
+  }
+  document.querySelectorAll("[data-ck]").forEach(function (el) {
+    el.addEventListener(el.tagName === "SELECT" ? "change" : "input", function () {
+      var k = el.dataset.ck;
+      C[k] = el.type === "checkbox" ? el.checked : el.value;
+      if (k === "relato") C.relatoManual = true;
+      if (k === "corrida") {
+        var r = CORRIDAS[norm(el.value)];
+        if (r) {
+          C.tipo = r[0]; C.checkpoints = String(r[1]); C.voltas = r[2] ? String(r[2]) : "";
+          $("c-tipo").value = C.tipo; $("c-checkpoints").value = C.checkpoints; $("c-voltas").value = C.voltas;
+        }
+      }
+      cUpdate();
+    });
+  });
+  document.querySelectorAll("[data-cme]").forEach(function (b) {
+    b.addEventListener("click", function () { var k = b.dataset.cme; C[k] = S.me; $("c-" + k).value = S.me; cUpdate(); });
+  });
+  $("c-btn-add-item").addEventListener("click", function () {
+    C.items.push({ q: 1, n: "" }); renderItemsC(); cUpdate();
+    var last = document.getElementById("c-name-" + (C.items.length - 1)); if (last) last.focus();
+  });
+  $("c-btn-regen").addEventListener("click", function () { C.relatoManual = false; cUpdate(); });
+  var ctt;
+  function cToast(msg) { $("c-toast").textContent = msg; clearTimeout(ctt); ctt = setTimeout(function () { $("c-toast").textContent = ""; }, 2600); }
+  $("c-btn-new").addEventListener("click", function () {
+    C = blankC(); renderItemsC(); cSync(); cUpdate();
+    cToast("Campos limpos. Dados fixos mantidos.");
+  });
+  $("c-btn-copy").addEventListener("click", function () {
+    var text = cBuild();
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents($("c-out"));
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      cToast("Texto selecionado. Use Ctrl+C.");
+    }
+    try { navigator.clipboard.writeText(text).then(function () { cToast("Copiado!"); }, fallback); } catch (e) { fallback(); }
+  });
+  renderChipsC(); renderItemsC(); cSync(); cUpdate();
+
+  var TABS = ["relatorio", "boosting", "corridas"];
   function showTab(name) {
     if (TABS.indexOf(name) < 0) name = "relatorio";
     TABS.forEach(function (t) {
@@ -1002,7 +1325,7 @@ pre#out {
     var r = m[2].toLowerCase();
     return m[1] + r.charAt(0).toUpperCase() + r.slice(1);
   }
-  var PULAR = { "f-header": 1, "f-ocorrencia": 1, "f-origem": 1, "b-origem": 1, "f-relato": 1, "b-relato": 1 };
+  var PULAR = { "f-header": 1, "f-ocorrencia": 1, "f-origem": 1, "b-origem": 1, "c-origem": 1, "c-corrida": 1, "c-relato": 1, "f-relato": 1, "b-relato": 1 };
   document.addEventListener("focusout", function (e) {
     var el = e.target;
     if (!el || !el.tagName || PULAR[el.id]) return;
