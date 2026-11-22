@@ -56,6 +56,11 @@ details.card > summary { cursor: pointer; font-family: var(--font-display); font
 details.card[open] > summary { margin-bottom: 10px; }
 .sub-h { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: .06em; text-transform: uppercase; color: var(--badge); margin: 16px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: .65; }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
+.tab { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 10px 16px; margin-bottom: -1px; font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; letter-spacing: .03em; color: var(--muted); }
+.tab:hover { color: var(--fg); border-color: transparent; }
+.tab[aria-selected="true"] { color: var(--badge); border-bottom-color: var(--badge); }
+.tab[aria-selected="true"]:hover { border-bottom-color: var(--badge); }
 .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
 .row .full { grid-column: 1 / -1; }
 @media (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr); } }
@@ -100,6 +105,12 @@ pre#out {
 </head>
 <body>
 <div class="wrap">
+  <nav class="tabs" role="tablist" aria-label="Seções do site">
+    <button type="button" class="tab" role="tab" id="tab-btn-relatorio" data-tab="relatorio" aria-controls="tab-relatorio" aria-selected="true">Relatório</button>
+    <button type="button" class="tab" role="tab" id="tab-btn-nova" data-tab="nova" aria-controls="tab-nova" aria-selected="false">Nova aba</button>
+  </nav>
+
+  <section id="tab-relatorio" role="tabpanel" aria-labelledby="tab-btn-relatorio">
   <header class="top">
     <div>
       <h1>Gerador de Relatório</h1>
@@ -231,6 +242,20 @@ pre#out {
       <pre id="out"></pre>
     </div>
   </div>
+  </section>
+
+  <section id="tab-nova" role="tabpanel" aria-labelledby="tab-btn-nova" hidden>
+    <header class="top">
+      <div>
+        <h1>Nova aba</h1>
+        <p class="sub">Esta aba está vazia por enquanto. Aqui vai a outra ferramenta, separada do gerador de relatório.</p>
+      </div>
+    </header>
+    <section class="card">
+      <h2>Em construção</h2>
+      <p class="hint">O conteúdo desta aba ainda vai ser definido.</p>
+    </section>
+  </section>
 </div>
 
 <datalist id="dl-oc">
@@ -575,6 +600,21 @@ pre#out {
 
   renderChips(); renderItems(); renderResgates(); syncInputs(); update();
   if (!S.me.trim()) $("fixed").open = true;
+
+  var TABS = ["relatorio", "nova"];
+  function showTab(name) {
+    if (TABS.indexOf(name) < 0) name = "relatorio";
+    TABS.forEach(function (t) {
+      var on = t === name;
+      $("tab-" + t).hidden = !on;
+      $("tab-btn-" + t).setAttribute("aria-selected", on ? "true" : "false");
+    });
+    try { history.replaceState(null, "", "#" + name); } catch (e) {}
+  }
+  document.querySelectorAll(".tab").forEach(function (b) {
+    b.addEventListener("click", function () { showTab(b.dataset.tab); });
+  });
+  showTab((location.hash || "").slice(1));
 })();
 </script>
 </body>
