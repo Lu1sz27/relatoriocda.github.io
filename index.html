@@ -55,6 +55,7 @@ h2 { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; let
 details.card > summary { cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: .06em; text-transform: uppercase; color: var(--badge); }
 details.card[open] > summary { margin-bottom: 10px; }
 .sub-h { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; letter-spacing: .06em; text-transform: uppercase; color: var(--badge); margin: 16px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: .65; }
 .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
 .row .full { grid-column: 1 / -1; }
 @media (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr); } }
@@ -132,13 +133,13 @@ pre#out {
             <input type="text" id="f-ocorrencia" data-k="ocorrencia" list="dl-oc" autocomplete="off" placeholder="Escolha ou digite a QRU">
           </label>
           <label>Origem da ocorrência
-            <input type="text" id="f-origem" data-k="origem" list="dl-origem" autocomplete="off">
+            <input type="text" id="f-origem" data-k="origem" list="dl-origem" autocomplete="off" placeholder="Escolha ou digite a origem (ex.: central)">
           </label>
-          <label>Região da ocorrência
-            <input type="text" id="f-localQru" data-k="localQru" autocomplete="off">
+          <label>Onde iniciou a ocorrência
+            <input type="text" id="f-localQru" data-k="localQru" autocomplete="off" placeholder="Região onde iniciou (ex.: Cassino)">
           </label>
-          <label>Região onde terminou
-            <input type="text" id="f-localFinal" data-k="localFinal" autocomplete="off">
+          <label>Onde finalizou a ocorrência
+            <input type="text" id="f-localFinal" data-k="localFinal" autocomplete="off" placeholder="Região onde finalizou (ex.: Galeria)">
           </label>
           <div class="full checks">
             <label class="check"><input type="checkbox" id="f-fugaVeic" data-k="fugaVeic"> Empreendeu fuga com o veículo</label>
@@ -148,7 +149,7 @@ pre#out {
             <label class="check"><input type="checkbox" id="f-fugaAgua" data-k="fugaAgua"> Fuga aquática (pulou na água)</label>
           </div>
           <label class="full">Relato (pode editar à mão)
-            <textarea id="f-relato" data-k="relato" rows="7"></textarea>
+            <textarea id="f-relato" data-k="relato" rows="7" placeholder="O relato aparece aqui depois que você escolher a QRU. Você pode editar à mão."></textarea>
           </label>
           <div class="full relato-tools">
             <span class="hint" id="relato-state">Texto montado automaticamente pelos campos acima.</span>
@@ -162,16 +163,16 @@ pre#out {
         <label class="check" style="margin-bottom:10px"><input type="checkbox" id="f-semVeiculo" data-k="semVeiculo"> Sem veículo nesta ocorrência</label>
         <div class="row" id="veic-fields">
           <label>Modelo
-            <input type="text" id="f-modelo" data-k="modelo" autocomplete="off">
+            <input type="text" id="f-modelo" data-k="modelo" autocomplete="off" placeholder="Modelo do veículo">
           </label>
           <label>Placa
-            <input type="text" id="f-placa" data-k="placa" autocomplete="off" style="text-transform:uppercase">
+            <input type="text" id="f-placa" data-k="placa" autocomplete="off" style="text-transform:uppercase" placeholder="Placa do veículo">
           </label>
           <label>Dono
-            <input type="text" id="f-dono" data-k="dono" autocomplete="off">
+            <input type="text" id="f-dono" data-k="dono" autocomplete="off" placeholder="Proprietário do veículo">
           </label>
           <label>Cor e características
-            <input type="text" id="f-cor" data-k="cor" autocomplete="off" placeholder="Preta com neon Vermelho">
+            <input type="text" id="f-cor" data-k="cor" autocomplete="off" placeholder="Ex.: Preta com neon Vermelho">
           </label>
         </div>
         <div id="resg-box" hidden>
@@ -192,10 +193,10 @@ pre#out {
         <h2>Observações</h2>
         <div class="row">
           <label class="full">Revista pessoal feita por
-            <input type="text" id="f-revistaPor" data-k="revistaPor" list="dl-team" autocomplete="off">
+            <input type="text" id="f-revistaPor" data-k="revistaPor" list="dl-team" autocomplete="off" placeholder="Nome de quem fez a revista">
           </label>
           <label class="full">Outras observações (opcional)
-            <textarea id="f-obsExtra" data-k="obsExtra" rows="2"></textarea>
+            <textarea id="f-obsExtra" data-k="obsExtra" rows="2" placeholder="Alguma observação a mais sobre a ocorrência"></textarea>
           </label>
         </div>
       </section>
@@ -204,16 +205,16 @@ pre#out {
         <h2>Responsabilidades</h2>
         <div class="row">
           <label class="full">Relatório
-            <span class="with-me"><input type="text" id="f-relatorio" data-k="relatorio" list="dl-team" autocomplete="off"><button type="button" class="small" data-me="relatorio">Eu</button></span>
+            <span class="with-me"><input type="text" id="f-relatorio" data-k="relatorio" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-me="relatorio">Eu</button></span>
           </label>
           <label class="full">Condução
-            <span class="with-me"><input type="text" id="f-conducao" data-k="conducao" list="dl-team" autocomplete="off"><button type="button" class="small" data-me="conducao">Eu</button></span>
+            <span class="with-me"><input type="text" id="f-conducao" data-k="conducao" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-me="conducao">Eu</button></span>
           </label>
           <label class="full">Revista do veículo
-            <span class="with-me"><input type="text" id="f-revVeic" data-k="revVeic" list="dl-team" autocomplete="off"><button type="button" class="small" data-me="revVeic">Eu</button></span>
+            <span class="with-me"><input type="text" id="f-revVeic" data-k="revVeic" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-me="revVeic">Eu</button></span>
           </label>
           <label class="full">Apreensão do veículo
-            <span class="with-me"><input type="text" id="f-apreVeic" data-k="apreVeic" list="dl-team" autocomplete="off"><button type="button" class="small" data-me="apreVeic">Eu</button></span>
+            <span class="with-me"><input type="text" id="f-apreVeic" data-k="apreVeic" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-me="apreVeic">Eu</button></span>
           </label>
         </div>
       </section>
@@ -256,7 +257,7 @@ pre#out {
       header: "🛡️ 1º Batalhão de Polícia Militar - Cidade Alta (1ºBPM-CA) 🛡️",
       me: "",
       team: "",
-      ocorrencia: "", origem: "central", localQru: "", localFinal: "",
+      ocorrencia: "", origem: "", localQru: "", localFinal: "",
       fugaVeic: false, inop: false, fugaPe: false, resgate: false, fugaAgua: false,
       resgates: [],
       relato: "", relatoManual: false,
@@ -349,7 +350,7 @@ pre#out {
     } else if (org === "denuncia anonima") {
       t = "Recebemos uma denúncia anônima, de uma QRU de " + oc + reg + ". Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
     } else {
-      t = "Recebemos uma denúncia (via " + (S.origem || "central").trim() + "), de uma QRU de " + oc + reg + ", Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
+      t = "Recebemos uma denúncia" + (S.origem.trim() ? " (via " + S.origem.trim() + ")" : "") + ", de uma QRU de " + oc + reg + ", Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
     }
 
     var peSemVeic = !S.fugaVeic && S.fugaPe;
@@ -455,7 +456,7 @@ pre#out {
       var row = document.createElement("div"); row.className = "item";
       var q = document.createElement("input"); q.type = "number"; q.min = "1"; q.value = it.q; q.setAttribute("aria-label", "Quantidade"); q.id = "qty-" + idx;
       q.addEventListener("input", function () { it.q = parseInt(q.value, 10) || 1; update(); });
-      var n = document.createElement("input"); n.type = "text"; n.value = it.n; n.setAttribute("aria-label", "Item"); n.id = "name-" + idx; n.autocomplete = "off";
+      var n = document.createElement("input"); n.type = "text"; n.value = it.n; n.setAttribute("aria-label", "Item"); n.id = "name-" + idx; n.autocomplete = "off"; n.placeholder = "Objeto apreendido (ex.: chip ilegal)";
       n.addEventListener("input", function () { it.n = n.value; update(); });
       var x = document.createElement("button"); x.type = "button"; x.className = "small"; x.textContent = "Remover";
       x.addEventListener("click", function () { S.items.splice(idx, 1); renderItems(); update(); });
@@ -470,7 +471,7 @@ pre#out {
       hd.textContent = "Veículo de resgate" + (S.resgates.length > 1 ? " " + (idx + 1) : "");
       wrap.appendChild(hd);
       var row = document.createElement("div"); row.className = "row";
-      [["modelo", "Modelo", ""], ["placa", "Placa", ""], ["dono", "Dono", ""], ["cor", "Cor e características", "Preta com neon Vermelho"]].forEach(function (f) {
+      [["modelo", "Modelo", "Modelo do veículo de resgate"], ["placa", "Placa", "Placa do veículo de resgate"], ["dono", "Dono", "Proprietário do veículo"], ["cor", "Cor e características", "Ex.: Preta com neon Vermelho"]].forEach(function (f) {
         var lab = document.createElement("label"); lab.appendChild(document.createTextNode(f[1]));
         var inp = document.createElement("input"); inp.type = "text"; inp.autocomplete = "off";
         inp.id = "resg-" + idx + "-" + f[0]; inp.value = r[f[0]] || "";
