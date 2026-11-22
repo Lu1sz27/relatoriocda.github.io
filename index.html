@@ -166,7 +166,7 @@ pre#out {
             <input type="text" id="f-modelo" data-k="modelo" autocomplete="off" placeholder="Modelo do veículo">
           </label>
           <label>Placa
-            <input type="text" id="f-placa" data-k="placa" autocomplete="off" style="text-transform:uppercase" placeholder="Placa do veículo">
+            <input type="text" id="f-placa" data-k="placa" autocomplete="off" style="text-transform:lowercase" placeholder="Placa do veículo">
           </label>
           <label>Dono
             <input type="text" id="f-dono" data-k="dono" autocomplete="off" placeholder="Proprietário do veículo">
@@ -402,7 +402,7 @@ pre#out {
     if (!S.semVeiculo) {
       L.push("🚗 VEÍCULO");
       L.push("→ Modelo: " + S.modelo.trim());
-      var placa = S.placa.trim().toUpperCase();
+      var placa = S.placa.trim().toLowerCase();
       if (S.dono.trim()) placa += " ( Dono: " + S.dono.trim() + " )";
       L.push("→ Placa: " + placa);
       L.push("→ Coloração e características: " + (S.cor.trim() ? "Coloração " + S.cor.trim() : ""));
@@ -412,7 +412,7 @@ pre#out {
       S.resgates.forEach(function (r, i) {
         L.push("🚗 VEÍCULO DE RESGATE" + (S.resgates.length > 1 ? " " + (i + 1) : ""));
         L.push("→ Modelo: " + r.modelo.trim());
-        var rp = r.placa.trim().toUpperCase();
+        var rp = r.placa.trim().toLowerCase();
         if (r.dono.trim()) rp += " ( Dono: " + r.dono.trim() + " )";
         L.push("→ Placa: " + rp);
         L.push("→ Coloração e características: " + (r.cor.trim() ? "Coloração " + r.cor.trim() : ""));
@@ -476,7 +476,7 @@ pre#out {
         var inp = document.createElement("input"); inp.type = "text"; inp.autocomplete = "off";
         inp.id = "resg-" + idx + "-" + f[0]; inp.value = r[f[0]] || "";
         if (f[2]) inp.placeholder = f[2];
-        if (f[0] === "placa") inp.style.textTransform = "uppercase";
+        if (f[0] === "placa") inp.style.textTransform = "lowercase";
         inp.addEventListener("input", function () { r[f[0]] = inp.value; update(); });
         lab.appendChild(inp); row.appendChild(lab);
       });
@@ -554,7 +554,6 @@ pre#out {
   $("btn-new").addEventListener("click", function () {
     var keep = {}; FIXED.forEach(function (k) { keep[k] = S[k]; });
     S = Object.assign(blank(), keep);
-    S.relatorio = S.me;
     renderItems(); renderResgates(); syncInputs(); update();
     toast("Campos limpos. Dados fixos mantidos.");
   });
@@ -562,17 +561,7 @@ pre#out {
   var tt;
   function toast(msg) { $("toast").textContent = msg; clearTimeout(tt); tt = setTimeout(function () { $("toast").textContent = ""; }, 2600); }
 
-  function rememberNames() {
-    var names = teamList();
-    [S.revistaPor, S.conducao, S.revVeic, S.apreVeic, S.relatorio].forEach(function (n) {
-      n = (n || "").trim();
-      if (n && n !== S.me.trim() && names.indexOf(n) < 0) names.push(n);
-    });
-    S.team = names.join("\n"); $("f-team").value = S.team;
-  }
-
   $("btn-copy").addEventListener("click", function () {
-    rememberNames(); update();
     var text = build();
     function fallback() {
       var r = document.createRange(); r.selectNodeContents($("out"));
