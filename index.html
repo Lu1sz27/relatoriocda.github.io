@@ -225,7 +225,7 @@ pre#out {
             <input type="text" id="f-ocorrencia" data-k="ocorrencia" list="dl-oc" autocomplete="off" placeholder="Escolha ou digite a QRU">
           </label>
           <label>Origem da ocorrência
-            <input type="text" id="f-origem" data-k="origem" list="dl-origem" autocomplete="off" placeholder="Ex.: central ou flagrante">
+            <input type="text" id="f-origem" data-k="origem" list="dl-origem" autocomplete="off" placeholder="Ex.: Central ou Flagrante">
           </label>
           <label>Onde iniciou a ocorrência
             <input type="text" id="f-localQru" data-k="localQru" autocomplete="off" placeholder="Região onde iniciou (ex.: Cassino)">
@@ -347,7 +347,7 @@ pre#out {
             </select>
           </label>
           <label>Origem da ocorrência
-            <input type="text" id="b-origem" data-bk="origem" list="dl-origem" autocomplete="off" placeholder="Ex.: central ou flagrante">
+            <input type="text" id="b-origem" data-bk="origem" list="dl-origem" autocomplete="off" placeholder="Ex.: Central ou Flagrante">
           </label>
           <label>Onde iniciou a ocorrência
             <input type="text" id="b-localQru" data-bk="localQru" autocomplete="off" placeholder="Região onde iniciou (ex.: Cassino)">
@@ -494,16 +494,36 @@ pre#out {
 
 
 <datalist id="dl-oc">
-  <option value="Corrida Ilegal"><option value="Tráfico de Drogas"><option value="Boosting"><option value="Sequestro">
-  <option value="Roubo à Porta-malas"><option value="Roubo à Residência"><option value="ATMs e Registradoras">
-  <option value="Estúdio de Tatuagem"><option value="Ammunation"><option value="Loja de Bebidas"><option value="Loja de Departamento">
-  <option value="Carro Forte"><option value="Joalheria"><option value="Docas"><option value="Concessionária">
-  <option value="Banco Fleeca"><option value="Banco de Paleto"><option value="Banco Central"><option value="Banco Roxwood">
-  <option value="Laboratório Humane (Nióbio)"><option value="Ação de Rua"><option value="Guerra">
-  <option value="Disparo de Arma de Fogo"><option value="Roubo de Veículo"><option value="Procurado">
-  <option value="Uso de Equipamento Restrito"><option value="Infração de Trânsito"><option value="Desobediência">
+  <option value="Ação de Rua">
+  <option value="Ammunation">
+  <option value="ATMs e Registradoras">
+  <option value="Banco Central">
+  <option value="Banco de Paleto">
+  <option value="Banco Fleeca">
+  <option value="Banco Roxwood">
+  <option value="Boosting">
+  <option value="Carro Forte">
+  <option value="Concessionária">
+  <option value="Corrida Ilegal">
+  <option value="Desobediência">
+  <option value="Disparo de Arma de Fogo">
+  <option value="Docas">
+  <option value="Estúdio de Tatuagem">
+  <option value="Guerra">
+  <option value="Infração de Trânsito">
+  <option value="Joalheria">
+  <option value="Laboratório Humane (Nióbio)">
+  <option value="Loja de Bebidas">
+  <option value="Loja de Departamento">
+  <option value="Procurado">
+  <option value="Roubo à Porta-malas">
+  <option value="Roubo à Residência">
+  <option value="Roubo de Veículo">
+  <option value="Sequestro">
+  <option value="Tráfico de Drogas">
+  <option value="Uso de Equipamento Restrito">
 </datalist>
-<datalist id="dl-origem"><option value="central"><option value="denúncia por característica"><option value="fundada suspeita"><option value="flagrante"><option value="denúncia anônima"></datalist>
+<datalist id="dl-origem"><option value="Central"><option value="Denúncia anônima"><option value="Denúncia por característica"><option value="Flagrante"><option value="Fundada suspeita"></datalist>
 <datalist id="dl-team"></datalist>
 
 <script>
@@ -610,7 +630,7 @@ pre#out {
     } else if (org === "denuncia anonima") {
       t = "Recebemos uma denúncia anônima, de uma QRU de " + oc + reg + ". Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
     } else {
-      t = "Recebemos uma denúncia" + (S.origem.trim() ? " (via " + S.origem.trim() + ")" : "") + ", de uma QRU de " + oc + reg + ", Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
+      t = "Recebemos uma denúncia" + (S.origem.trim() ? " (via " + S.origem.trim().toLowerCase() + ")" : "") + ", de uma QRU de " + oc + reg + ", Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
     }
 
     var peSemVeic = !S.fugaVeic && S.fugaPe;
@@ -881,7 +901,7 @@ pre#out {
     } else if (org === "denuncia anonima") {
       t = "Recebemos uma denúncia anônima, de uma QRU de boosting" + rankTxt + reg + ". Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
     } else {
-      t = "Recebemos uma denúncia" + (B.origem.trim() ? " (via " + B.origem.trim() + ")" : "") + ", de uma QRU de boosting" + rankTxt + reg + ", Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
+      t = "Recebemos uma denúncia" + (B.origem.trim() ? " (via " + B.origem.trim().toLowerCase() + ")" : "") + ", de uma QRU de boosting" + rankTxt + reg + ", Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
     }
 
     var ap = B.apoios;
