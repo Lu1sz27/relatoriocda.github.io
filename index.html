@@ -58,38 +58,43 @@ details.card[open] > summary { margin-bottom: 10px; }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: .65; }
 
 /* ---------- Início ---------- */
-.hm-hero { position: relative; overflow: hidden; border-radius: 12px; color: #12203a; isolation: isolate;
-  background: linear-gradient(180deg, #eef3f4 0%, #d9e6ef 62%, #bcd3e4 100%); }
-.hm-body { padding: 40px clamp(20px, 5vw, 56px) 0; max-width: 700px; position: relative; z-index: 1; }
-.hm-badge { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-body); font-weight: 600; font-size: .95rem; color: #12203a; background: rgba(255,255,255,.7); border: 1px solid rgba(18,32,58,.14); padding: 5px 12px 5px 8px; border-radius: 99px; }
-.hm-badge svg { width: 24px; height: 24px; flex: none; }
-.hm-hero h1 { font-family: "Newsreader", Georgia, serif; font-weight: 400; text-transform: none; letter-spacing: -.01em; font-size: clamp(2.6rem, 7vw, 4.6rem); line-height: 1.02; margin: 18px 0 14px; color: #12203a; }
-.hm-hero h1 em { font-style: italic; }
-.hm-lead { font-size: 1.1rem; max-width: 46ch; margin: 0 0 22px; color: #3b4a66; }
+.hm-hero { position: relative; overflow: hidden; min-height: 440px; border-radius: 12px; isolation: isolate; color: #f3f5fb; border: 1px solid #1e2a4a;
+  background: radial-gradient(120% 90% at 85% 100%, #16244a 0%, #0a0f1f 60%, #070a14 100%); }
+.hm-heli { position: absolute; right: 0; bottom: 0; width: min(100%, 980px); height: auto; z-index: -1; opacity: .9; filter: brightness(.72) saturate(1.1);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 55%), linear-gradient(180deg, transparent 0, #000 40%); -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent 0, #000 55%), linear-gradient(180deg, transparent 0, #000 40%); mask-composite: intersect; }
+.hm-body { padding: 44px clamp(20px, 5vw, 56px) 40px; max-width: 600px; }
+.hm-unit { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: .04em; color: #d9dfef; }
+.hm-hero h1 { font-family: var(--font-display); font-weight: 700; font-style: italic; text-transform: uppercase; letter-spacing: 0; font-size: clamp(2.4rem, 6.5vw, 4.4rem); line-height: .95; margin: 8px 0 14px; color: #ffffff; }
+.hm-hero h1 span { display: block; color: #f7b928; }
+.hm-lead { font-size: 1.05rem; max-width: 48ch; margin: 0 0 22px; color: #d3d9ea; }
 .hm-cta { display: flex; flex-wrap: wrap; gap: 10px; }
-.hm-btn { appearance: none; cursor: pointer; font-family: var(--font-body); font-weight: 600; font-size: 1rem; padding: 11px 20px; border-radius: 8px; border: 1.5px solid #12203a; background: rgba(255,255,255,.65); color: #12203a; }
-.hm-btn.gold { background: #12203a; color: #ffffff; }
-.hm-tool .hm-btn.hm-open { background: transparent; color: var(--fg); border: 1.5px solid var(--badge); }
-.hm-tool .hm-btn.hm-open:hover { background: var(--surface); }
-.hm-btn:hover { filter: brightness(1.06); }
-.hm-btn:focus-visible { outline: 3px solid #e0a82e; outline-offset: 2px; }
-.hm-heli { display: block; width: 100%; height: auto; margin-top: -26px; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 30%); mask-image: linear-gradient(180deg, transparent 0, #000 30%); }
+.hm-btn { appearance: none; cursor: pointer; font-family: var(--font-body); font-weight: 600; font-size: 1rem; padding: 11px 20px; border-radius: 8px; border: 1.5px solid #f3f5fb; background: rgba(8,12,24,.6); color: #f3f5fb; }
+.hm-btn.gold { background: #f7b928; border-color: #f7b928; color: #171002; }
+.hm-btn:hover { filter: brightness(1.1); }
+.hm-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.hm-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.hm-card { appearance: none; font: inherit; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 10px; color: #f3f5fb; background: #0f1730; border: 1px solid #26335a; }
+.hm-card:hover:not(:disabled) { border-color: #f7b928; }
+.hm-card:focus-visible { outline: 3px solid #f7b928; outline-offset: 2px; }
+.hm-card:disabled { cursor: default; opacity: .75; }
+.hm-card svg { width: 34px; height: 34px; stroke: #f7b928; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.hm-card b { font-size: 1.05rem; }
+.hm-card span { color: #b4bdd6; font-size: .92rem; flex: 1; }
+.hm-card em { font-style: normal; font-weight: 600; color: #f7b928; font-size: .92rem; }
+@media (max-width: 900px) { .hm-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .hm-steps { grid-template-columns: minmax(0, 1fr); } .hm-body { padding-top: 28px; } .hm-heli { width: 170%; right: -20%; opacity: .55; } }
+@media (max-width: 480px) { .hm-cards { grid-template-columns: minmax(0, 1fr); } }
+.hm-foot { display: flex; flex-wrap: wrap; gap: 6px 16px; justify-content: space-between; margin-top: 34px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
 .hm-sec { margin-top: 34px; }
 .hm-sec > h2 { font-size: 1.6rem; margin-bottom: 4px; }
 .hm-sec > p { color: var(--muted); margin: 0 0 14px; max-width: 62ch; }
-.hm-tools { border-top: 1px solid var(--line); }
-.hm-tool { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; align-items: center; padding: 16px 4px; border-bottom: 1px solid var(--line); }
-.hm-tool h3 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; letter-spacing: .03em; }
-.hm-tool p { margin: 0; color: var(--muted); grid-column: 1; }
-.hm-tool .hm-open { grid-column: 2; grid-row: 1 / span 2; }
-.hm-tag { display: inline-block; margin-left: 10px; font-family: var(--font-body); font-size: .8rem; font-weight: 600; letter-spacing: 0; vertical-align: middle; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--badge); color: var(--badge); }
 .hm-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; counter-reset: s; }
 .hm-steps li { counter-increment: s; border-left: 3px solid var(--badge); padding: 2px 0 2px 14px; }
 .hm-steps li::before { content: counter(s); font-family: var(--font-display); font-weight: 700; font-size: 1.6rem; color: var(--badge); display: block; line-height: 1; }
 .hm-steps b { display: block; margin: 4px 0 2px; }
 .hm-steps span { color: var(--muted); }
 .hm-note { margin-top: 30px; color: var(--muted); font-size: .9rem; }
-@media (max-width: 700px) { .hm-steps { grid-template-columns: minmax(0, 1fr); } .hm-body { padding-top: 28px; } .hm-heli { margin-top: 10px; } .hm-tool { grid-template-columns: minmax(0, 1fr); } .hm-tool .hm-open { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 8px; } }
 .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 18px; }
 .tab { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 10px 16px; margin-bottom: -1px; font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; letter-spacing: .03em; color: var(--muted); }
 .tab:hover { color: var(--fg); border-color: transparent; }
@@ -148,26 +153,22 @@ pre#out {
 
   <section id="tab-inicio" role="tabpanel" aria-labelledby="tab-btn-inicio" hidden>
     <div class="hm-hero">
+      <img class="hm-heli" src="heli.jpg" width="1095" height="261" alt="">
       <div class="hm-body">
-        <span class="hm-badge"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 35 8v11c0 9-6 16-15 19C11 35 5 28 5 19V8z" fill="#12203a" stroke="#12203a" stroke-width="2"/><path d="M20 10l2.6 5.4 5.9.8-4.3 4.1 1 5.9L20 23.4 14.8 26.2l1-5.9-4.3-4.1 5.9-.8z" fill="#f0c867"/></svg>1ºBPM-CA · Cidade Alta</span>
-        <h1>Servir e <em>proteger</em> a Cidade Alta.</h1>
+        <div class="hm-unit">1º BPM · Cidade Alta (1ºBPM-CA)</div>
+        <h1>Servir e proteger<span>a Cidade Alta.</span></h1>
         <p class="hm-lead">Ferramentas do 1º Batalhão de Polícia Militar para montar os relatórios das ocorrências sem perder tempo.</p>
         <div class="hm-cta">
           <button type="button" class="hm-btn gold" data-goto="relatorio">Fazer um relatório</button>
           <button type="button" class="hm-btn" data-goto="boosting">Relatório de boosting</button>
         </div>
       </div>
-      <img class="hm-heli" src="heli.jpg" width="1095" height="261" alt="Helicóptero da polícia pousado no heliponto">
     </div>
-
-    <div class="hm-sec">
-      <h2>Ferramentas</h2>
-      <p>Cada aba monta um tipo de relatório no mesmo padrão do batalhão.</p>
-      <div class="hm-tools">
-      <div class="hm-tool"><h3>Gerador de relatório</h3><p>Escolha a QRU e a origem, preencha o veículo e os envolvidos, e copie o relatório pronto.</p><button type="button" class="hm-btn hm-open" data-goto="relatorio">Abrir</button></div>
-      <div class="hm-tool"><h3>Boosting</h3><p>Relatório de boosting por rank, com veículo principal e até 3 veículos de apoio.</p><button type="button" class="hm-btn hm-open" data-goto="boosting">Abrir</button></div>
-      <div class="hm-tool"><h3>Corridas<span class="hm-tag">Em manutenção</span></h3><p>Consulta das corridas da cidade.</p><button type="button" class="hm-btn hm-open" data-goto="corridas">Abrir</button></div>
-      </div>
+    <div class="hm-cards">
+        <button type="button" class="hm-card" data-goto="relatorio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg><b>Relatório de ocorrência</b><span>Escolha a QRU, preencha os dados e copie o relatório pronto.</span><em>Abrir</em></button>
+        <button type="button" class="hm-card" data-goto="boosting"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 15l2-5h11l3 3h2v3H3z"/><circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/><path d="M2 7h5M1 10h3"/></svg><b>Boosting</b><span>Relatório por rank, com veículo principal e veículos de apoio.</span><em>Abrir</em></button>
+        <button type="button" class="hm-card" data-goto="corridas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 21V4M5 4h13l-3 4 3 4H5"/></svg><b>Corridas</b><span>Consulta das corridas da cidade. Em manutenção.</span><em>Abrir</em></button>
+        <button type="button" class="hm-card" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M16 12h0M8 16h2M12 16h2M16 16h0"/></svg><b>Calculadora de pena</b><span>Ainda não está disponível.</span><em>Em breve</em></button>
     </div>
 
     <div class="hm-sec">
@@ -179,7 +180,7 @@ pre#out {
       </ol>
     </div>
 
-    <p class="hm-note">O que você preenche fica salvo só neste navegador e neste aparelho.</p>
+    <footer class="hm-foot"><span>O que você preenche fica salvo só neste navegador e neste aparelho.</span><span>© 2026 1ºBPM-CA · Cidade Alta</span></footer>
   </section>
 
   <section id="tab-relatorio" role="tabpanel" aria-labelledby="tab-btn-relatorio" hidden>
