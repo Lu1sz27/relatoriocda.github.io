@@ -107,7 +107,7 @@ pre#out {
 <div class="wrap">
   <nav class="tabs" role="tablist" aria-label="Seções do site">
     <button type="button" class="tab" role="tab" id="tab-btn-relatorio" data-tab="relatorio" aria-controls="tab-relatorio" aria-selected="true">Relatório</button>
-    <button type="button" class="tab" role="tab" id="tab-btn-nova" data-tab="nova" aria-controls="tab-nova" aria-selected="false">Nova aba</button>
+    <button type="button" class="tab" role="tab" id="tab-btn-boosting" data-tab="boosting" aria-controls="tab-boosting" aria-selected="false">Boosting</button>
   </nav>
 
   <section id="tab-relatorio" role="tabpanel" aria-labelledby="tab-btn-relatorio">
@@ -244,17 +244,130 @@ pre#out {
   </div>
   </section>
 
-  <section id="tab-nova" role="tabpanel" aria-labelledby="tab-btn-nova" hidden>
-    <header class="top">
-      <div>
-        <h1>Nova aba</h1>
-        <p class="sub">Esta aba está vazia por enquanto. Aqui vai a outra ferramenta, separada do gerador de relatório.</p>
+  <section id="tab-boosting" role="tabpanel" aria-labelledby="tab-btn-boosting" hidden>
+  <header class="top">
+    <div>
+      <h1>Boosting</h1>
+      <p class="sub">Relatório de boosting: um veículo principal (roubado via contrato) e, se houver, até 3 veículos de apoio dos indivíduos. O título, o seu nome e a equipe são os "Dados fixos" da aba Relatório.</p>
+    </div>
+    <button type="button" id="b-btn-new">Novo boosting</button>
+  </header>
+
+  <div class="grid">
+    <div class="form">
+
+      <section class="card">
+        <h2>Ocorrência</h2>
+        <div class="row">
+          <label>Rank do boosting
+            <select id="b-rank" data-bk="rank">
+              <option value="">Escolha o rank</option>
+              <option value="D">D</option><option value="C">C</option><option value="B">B</option><option value="A">A</option><option value="S">S</option>
+            </select>
+          </label>
+          <label>Origem da ocorrência
+            <input type="text" id="b-origem" data-bk="origem" list="dl-origem" autocomplete="off" placeholder="Ex.: central ou flagrante">
+          </label>
+          <label>Onde iniciou a ocorrência
+            <input type="text" id="b-localQru" data-bk="localQru" autocomplete="off" placeholder="Região onde iniciou (ex.: Cassino)">
+          </label>
+          <label>Onde finalizou a ocorrência
+            <input type="text" id="b-localFinal" data-bk="localFinal" autocomplete="off" placeholder="Região onde finalizou (ex.: Galeria)">
+          </label>
+          <div class="full checks">
+            <label class="check"><input type="checkbox" id="b-pit" data-bk="pit"> Manobra P.I.T aplicada no veículo principal</label>
+            <label class="check"><input type="checkbox" id="b-box" data-bk="box"> BOX aplicado (só nos ranks A e S)</label>
+            <label class="check"><input type="checkbox" id="b-spike" data-bk="spike"> Spike utilizada</label>
+            <label class="check"><input type="checkbox" id="b-inop" data-bk="inop"> Veículo principal ficou inoperante (stall)</label>
+            <label class="check"><input type="checkbox" id="b-fugaPe" data-bk="fugaPe"> Os indivíduos tentaram fuga a pé e foram capturados</label>
+            <label class="check"><input type="checkbox" id="b-disparos" data-bk="disparos"> Houve disparos contra a guarnição</label>
+          </div>
+          <label class="full">Relato (pode editar à mão)
+            <textarea id="b-relato" data-bk="relato" rows="8" placeholder="O relato aparece aqui depois que você escolher o rank. Você pode editar à mão."></textarea>
+          </label>
+          <div class="full relato-tools">
+            <span class="hint" id="b-relato-state">Texto montado automaticamente pelos campos acima.</span>
+            <button type="button" class="small" id="b-btn-regen" hidden>Montar de novo</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Veículo principal</h2>
+        <p class="hint" style="margin:0 0 10px">Veículo roubado via contrato.</p>
+        <div class="row">
+          <label>Modelo
+            <input type="text" id="b-modelo" data-bk="modelo" autocomplete="off" placeholder="Modelo do veículo">
+          </label>
+          <label>Placa
+            <input type="text" id="b-placa" data-bk="placa" autocomplete="off" style="text-transform:lowercase" placeholder="Placa do veículo">
+          </label>
+          <label>Dono
+            <input type="text" id="b-dono" data-bk="dono" autocomplete="off" placeholder="Proprietário do veículo">
+          </label>
+          <label>Cor e características
+            <input type="text" id="b-cor" data-bk="cor" autocomplete="off" placeholder="Ex.: Preta com neon Vermelho">
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Veículos de apoio</h2>
+        <p class="hint" style="margin:0 0 4px">Veículos dos indivíduos que dão P.I.T nas viaturas e fecham o beco para as viaturas perderem o visual do veículo principal. Não são resgate. O manual permite no máximo 3 ao mesmo tempo.</p>
+        <div id="b-apoio-list"></div>
+        <div style="margin-top:8px"><button type="button" class="small" id="b-btn-add-apoio">+ Adicionar veículo de apoio</button></div>
+      </section>
+
+      <section class="card">
+        <h2>Objetos apreendidos</h2>
+        <div class="items" id="b-items"></div>
+        <div class="chips" id="b-chips" aria-label="Itens comuns"></div>
+        <p class="hint">Clique num item comum para adicionar. Deixe a lista vazia se nada foi apreendido.</p>
+        <div style="margin-top:8px"><button type="button" class="small" id="b-btn-add-item">+ Outro item</button></div>
+      </section>
+
+      <section class="card">
+        <h2>Observações</h2>
+        <div class="row">
+          <label class="full">Revista pessoal feita por
+            <input type="text" id="b-revistaPor" data-bk="revistaPor" list="dl-team" autocomplete="off" placeholder="Nome de quem fez a revista">
+          </label>
+          <label class="full">Outras observações (opcional)
+            <textarea id="b-obsExtra" data-bk="obsExtra" rows="2" placeholder="Alguma observação a mais sobre a ocorrência"></textarea>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Responsabilidades</h2>
+        <div class="row">
+          <label class="full">Relatório
+            <span class="with-me"><input type="text" id="b-relatorio" data-bk="relatorio" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-bme="relatorio">Eu</button></span>
+          </label>
+          <label class="full">Condução
+            <span class="with-me"><input type="text" id="b-conducao" data-bk="conducao" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-bme="conducao">Eu</button></span>
+          </label>
+          <label class="full">Revista do veículo
+            <span class="with-me"><input type="text" id="b-revVeic" data-bk="revVeic" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-bme="revVeic">Eu</button></span>
+          </label>
+          <label class="full">Apreensão do veículo
+            <span class="with-me"><input type="text" id="b-apreVeic" data-bk="apreVeic" list="dl-team" autocomplete="off" placeholder="Nome do policial"><button type="button" class="small" data-bme="apreVeic">Eu</button></span>
+          </label>
+        </div>
+      </section>
+    </div>
+
+    <div class="preview-col">
+      <div class="out-head">
+        <h2>Relatório pronto</h2>
+        <div class="actions">
+          <span id="b-toast" role="status" aria-live="polite"></span>
+          <button type="button" class="primary" id="b-btn-copy">Copiar relatório</button>
+        </div>
       </div>
-    </header>
-    <section class="card">
-      <h2>Em construção</h2>
-      <p class="hint">O conteúdo desta aba ainda vai ser definido.</p>
-    </section>
+      <pre id="b-out"></pre>
+    </div>
+  </div>
   </section>
 </div>
 
@@ -601,7 +714,246 @@ pre#out {
   renderChips(); renderItems(); renderResgates(); syncInputs(); update();
   if (!S.me.trim()) $("fixed").open = true;
 
-  var TABS = ["relatorio", "nova"];
+  /* ---------- Aba Boosting ---------- */
+  var BKEY = "relatorio-1bpm-boosting-v1";
+  var MAX_APOIO = 3;
+  function blankB() {
+    return {
+      rank: "", origem: "", localQru: "", localFinal: "",
+      pit: false, box: false, spike: false, inop: false, fugaPe: false, disparos: false,
+      relato: "", relatoManual: false,
+      modelo: "", placa: "", dono: "", cor: "",
+      apoios: [], items: [], revistaPor: "", obsExtra: "",
+      relatorio: "", conducao: "", revVeic: "", apreVeic: ""
+    };
+  }
+  function novoApoio() { return { modelo: "", placa: "", dono: "", cor: "", pit: false, beco: false }; }
+  function loadB() {
+    try {
+      var raw = localStorage.getItem(BKEY);
+      if (raw) return Object.assign(blankB(), JSON.parse(raw));
+    } catch (e) {}
+    return blankB();
+  }
+  function saveB() { try { localStorage.setItem(BKEY, JSON.stringify(B)); } catch (e) {} }
+  var B = loadB();
+  if (!Array.isArray(B.items)) B.items = [];
+  B.apoios = (Array.isArray(B.apoios) ? B.apoios : []).slice(0, MAX_APOIO).map(function (a) { return Object.assign(novoApoio(), a); });
+
+  function bGenRelato() {
+    if (!B.rank) return "";
+    var rankTxt = " de rank " + B.rank;
+    var reg = B.localQru.trim() ? " na região do " + B.localQru.trim() : "";
+    var org = norm(B.origem);
+    var modelo = B.modelo.trim();
+    var vp = modelo ? " a bordo de um veículo " + modelo : "";
+    var fin = B.localFinal.trim();
+    var crime = "praticando boosting" + rankTxt + " (roubo de veículo via contrato)";
+    var t;
+    if (org === "flagrante") {
+      t = "Durante o patrulhamento" + reg + ", flagramos o(s) requerente(s) " + crime + vp + ".";
+    } else if (org === "fundada suspeita") {
+      t = "Durante o patrulhamento nas proximidades de uma QRU de boosting" + rankTxt + reg + ", identificamos o(s) requerente(s)" + vp + " em fundada suspeita de envolvimento nessa ocorrência.";
+    } else if (org === "denuncia por caracteristica") {
+      t = "Recebemos uma denúncia (via central), de uma QRU de boosting" + rankTxt + reg + ", com as características do veículo. Durante o patrulhamento, localizamos o(s) requerente(s) correspondente(s) às características informadas" + vp + ".";
+    } else if (org === "denuncia anonima") {
+      t = "Recebemos uma denúncia anônima, de uma QRU de boosting" + rankTxt + reg + ". Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
+    } else {
+      t = "Recebemos uma denúncia" + (B.origem.trim() ? " (via " + B.origem.trim() + ")" : "") + ", de uma QRU de boosting" + rankTxt + reg + ", Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
+    }
+
+    var ap = B.apoios;
+    if (ap.length) {
+      var nomes = ap.map(function (a) { return a.modelo.trim(); }).filter(Boolean);
+      t += " A ocorrência contou com " + ap.length + (ap.length > 1 ? " veículos de apoio" : " veículo de apoio") + " dos indivíduos" + (nomes.length ? " (" + joinE(nomes) + ")" : "") + ".";
+    }
+    t += " Após aviso sonoro, luminoso e verbal, o indivíduo empreendeu fuga com o veículo principal.";
+    ap.forEach(function (a, i) {
+      var lab = "o veículo de apoio" + (ap.length > 1 ? " " + (i + 1) : "") + (a.modelo.trim() ? " (" + a.modelo.trim() + ")" : "");
+      var acao = null;
+      if (a.pit && a.beco) acao = "deu P.I.T nas viaturas e fechou o beco, fazendo com que as viaturas perdessem o visual do veículo principal";
+      else if (a.pit) acao = "deu P.I.T nas viaturas";
+      else if (a.beco) acao = "fechou o beco, fazendo com que as viaturas perdessem o visual do veículo principal";
+      if (acao) t += " Durante o acompanhamento, " + lab + " " + acao + ".";
+    });
+
+    var acoes = [];
+    if (B.pit) acoes.push("a manobra P.I.T");
+    if (B.box) acoes.push("o BOX");
+    if (B.spike) acoes.push("a spike");
+    if (acoes.length) t += " Para conter o veículo principal, foram utilizados: " + joinE(acoes) + ".";
+    if (B.disparos) t += " Houve disparos contra a guarnição, configurando tentativa de homicídio.";
+    if (B.inop) t += " O veículo principal ficou inoperante (stall)" + (fin ? ", na região do " + fin : "") + ".";
+    var onde = (fin && !B.inop) ? " na região do " + fin : "";
+    if (B.fugaPe) {
+      t += " O(s) indivíduo(s) desembarcou(aram) e tentou(aram) fuga a pé, porém foi(ram) capturado(s)" + onde + " e conduzido(s) até o departamento policial para prisão.";
+    } else {
+      t += " O(s) indivíduo(s) foi(ram) abordado(s)" + onde + " e conduzido(s) até o departamento policial para prisão.";
+    }
+    var its = B.items.filter(function (i) { return i.n.trim(); });
+    if (its.length) {
+      t += " Na revista, foi(ram) apreendido(s): " + its.map(function (i) { return (i.q || 1) + "x " + i.n.trim(); }).join(", ") + ".";
+    }
+    t += " Ao final da ocorrência, o(s) indivíduo(s) responde(m) por velozes e furiosos" + (B.disparos ? " e por tentativa de homicídio" : "") + ".";
+    return t;
+  }
+
+  function bVeiculo(L, titulo, v) {
+    L.push(titulo);
+    L.push("→ Modelo: " + v.modelo.trim());
+    var pl = v.placa.trim().toLowerCase();
+    if (v.dono.trim()) pl += " ( Dono: " + v.dono.trim() + " )";
+    L.push("→ Placa: " + pl);
+    L.push("→ Coloração e características: " + (v.cor.trim() ? "Coloração " + v.cor.trim() : ""));
+    L.push("");
+  }
+  function bBuild() {
+    var L = [];
+    L.push(S.header.trim());
+    L.push("");
+    L.push("📝RELATO:");
+    L.push(B.relato.trim());
+    L.push("");
+    bVeiculo(L, "🚗 VEÍCULO PRINCIPAL", B);
+    B.apoios.forEach(function (a, i) { bVeiculo(L, "🚙 VEÍCULO DE APOIO" + (B.apoios.length > 1 ? " " + (i + 1) : ""), a); });
+    L.push("📦 OBJETOS APREENDIDOS:");
+    var its = B.items.filter(function (i) { return i.n.trim(); });
+    if (its.length) { its.forEach(function (i) { L.push((i.q || 1) + "x " + i.n.trim()); }); }
+    else { L.push("Nada apreendido"); }
+    L.push("");
+    L.push("⚠️ OBSERVAÇÕES:");
+    var obs = [];
+    if (B.revistaPor.trim()) obs.push("Revista ficou por parte do " + B.revistaPor.trim());
+    if (B.obsExtra.trim()) obs.push(B.obsExtra.trim());
+    L.push(obs.length ? obs.join("\n") : "Sem observações");
+    L.push("");
+    L.push("👮‍♂️ RESPONSABILIDADES:");
+    L.push("→ Relatório: " + B.relatorio.trim());
+    L.push("→ Conducao: " + B.conducao.trim());
+    L.push("→ Revista do veículo: " + B.revVeic.trim());
+    L.push("→ Apreensão do veículo: " + B.apreVeic.trim());
+    return L.join("\n");
+  }
+
+  function bUpdate() {
+    var rk = B.rank === "A" || B.rank === "S";
+    if (!rk) { B.box = false; $("b-box").checked = false; }
+    $("b-box").disabled = !rk;
+    $("b-btn-add-apoio").disabled = B.apoios.length >= MAX_APOIO;
+    if (!B.relatoManual) { B.relato = bGenRelato(); $("b-relato").value = B.relato; }
+    $("b-btn-regen").hidden = !B.relatoManual;
+    $("b-relato-state").textContent = B.relatoManual ? "Você editou o relato à mão. Mudar os campos acima não altera mais esse texto." : "Texto montado automaticamente pelos campos acima.";
+    $("b-out").textContent = bBuild();
+    saveB();
+  }
+  function bSync() {
+    document.querySelectorAll("[data-bk]").forEach(function (el) {
+      var k = el.dataset.bk;
+      if (el.type === "checkbox") el.checked = !!B[k]; else el.value = B[k] == null ? "" : B[k];
+    });
+  }
+
+  function renderApoios() {
+    var box = $("b-apoio-list"); box.innerHTML = "";
+    B.apoios.forEach(function (a, idx) {
+      var wrap = document.createElement("div");
+      var hd = document.createElement("h3"); hd.className = "sub-h";
+      hd.textContent = "Veículo de apoio" + (B.apoios.length > 1 ? " " + (idx + 1) : "");
+      wrap.appendChild(hd);
+      var row = document.createElement("div"); row.className = "row";
+      [["modelo", "Modelo", "Modelo do veículo de apoio"], ["placa", "Placa", "Placa do veículo de apoio"], ["dono", "Dono", "Proprietário do veículo"], ["cor", "Cor e características", "Ex.: Preta com neon Vermelho"]].forEach(function (f) {
+        var lab = document.createElement("label"); lab.appendChild(document.createTextNode(f[1]));
+        var inp = document.createElement("input"); inp.type = "text"; inp.autocomplete = "off";
+        inp.id = "apoio-" + idx + "-" + f[0]; inp.value = a[f[0]] || ""; inp.placeholder = f[2];
+        if (f[0] === "placa") inp.style.textTransform = "lowercase";
+        inp.addEventListener("input", function () { a[f[0]] = inp.value; bUpdate(); });
+        lab.appendChild(inp); row.appendChild(lab);
+      });
+      wrap.appendChild(row);
+      var checks = document.createElement("div"); checks.className = "checks"; checks.style.marginTop = "10px";
+      [["pit", "Deu P.I.T nas viaturas"], ["beco", "Fechou o beco (as viaturas perderam o visual do veículo principal)"]].forEach(function (c) {
+        var lab = document.createElement("label"); lab.className = "check";
+        var cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "apoio-" + idx + "-" + c[0]; cb.checked = !!a[c[0]];
+        cb.addEventListener("change", function () { a[c[0]] = cb.checked; bUpdate(); });
+        lab.appendChild(cb); lab.appendChild(document.createTextNode(" " + c[1])); checks.appendChild(lab);
+      });
+      wrap.appendChild(checks);
+      var d = document.createElement("div"); d.style.marginTop = "8px";
+      var x = document.createElement("button"); x.type = "button"; x.className = "small"; x.textContent = "Remover este veículo";
+      x.addEventListener("click", function () { B.apoios.splice(idx, 1); renderApoios(); bUpdate(); });
+      d.appendChild(x); wrap.appendChild(d);
+      box.appendChild(wrap);
+    });
+  }
+  function renderItemsB() {
+    var box = $("b-items"); box.innerHTML = "";
+    B.items.forEach(function (it, idx) {
+      var row = document.createElement("div"); row.className = "item";
+      var q = document.createElement("input"); q.type = "number"; q.min = "1"; q.value = it.q; q.setAttribute("aria-label", "Quantidade"); q.id = "b-qty-" + idx;
+      q.addEventListener("input", function () { it.q = parseInt(q.value, 10) || 1; bUpdate(); });
+      var n = document.createElement("input"); n.type = "text"; n.value = it.n; n.setAttribute("aria-label", "Item"); n.id = "b-name-" + idx; n.autocomplete = "off"; n.placeholder = "Objeto apreendido (ex.: chip ilegal)";
+      n.addEventListener("input", function () { it.n = n.value; bUpdate(); });
+      var x = document.createElement("button"); x.type = "button"; x.className = "small"; x.textContent = "Remover";
+      x.addEventListener("click", function () { B.items.splice(idx, 1); renderItemsB(); bUpdate(); });
+      row.appendChild(q); row.appendChild(n); row.appendChild(x); box.appendChild(row);
+    });
+  }
+  function renderChipsB() {
+    var c = $("b-chips");
+    COMMON.forEach(function (name) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = "+ " + name;
+      b.addEventListener("click", function () {
+        var found = B.items.filter(function (i) { return i.n.toLowerCase() === name.toLowerCase(); })[0];
+        if (found) found.q = (found.q || 1) + 1; else B.items.push({ q: 1, n: name });
+        renderItemsB(); bUpdate();
+      });
+      c.appendChild(b);
+    });
+  }
+
+  document.querySelectorAll("[data-bk]").forEach(function (el) {
+    el.addEventListener(el.tagName === "SELECT" ? "change" : "input", function () {
+      var k = el.dataset.bk;
+      B[k] = el.type === "checkbox" ? el.checked : el.value;
+      if (k === "relato") B.relatoManual = true;
+      bUpdate();
+    });
+  });
+  document.querySelectorAll("[data-bme]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var k = b.dataset.bme; B[k] = S.me; $("b-" + k).value = S.me; bUpdate();
+    });
+  });
+  $("b-btn-add-apoio").addEventListener("click", function () {
+    if (B.apoios.length >= MAX_APOIO) return;
+    B.apoios.push(novoApoio()); renderApoios(); bUpdate();
+    var last = document.getElementById("apoio-" + (B.apoios.length - 1) + "-modelo"); if (last) last.focus();
+  });
+  $("b-btn-add-item").addEventListener("click", function () {
+    B.items.push({ q: 1, n: "" }); renderItemsB(); bUpdate();
+    var last = document.getElementById("b-name-" + (B.items.length - 1)); if (last) last.focus();
+  });
+  $("b-btn-regen").addEventListener("click", function () { B.relatoManual = false; bUpdate(); });
+  var btt;
+  function bToast(msg) { $("b-toast").textContent = msg; clearTimeout(btt); btt = setTimeout(function () { $("b-toast").textContent = ""; }, 2600); }
+  $("b-btn-new").addEventListener("click", function () {
+    B = blankB(); renderApoios(); renderItemsB(); bSync(); bUpdate();
+    bToast("Campos limpos. Dados fixos mantidos.");
+  });
+  $("b-btn-copy").addEventListener("click", function () {
+    var text = bBuild();
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents($("b-out"));
+      var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      bToast("Texto selecionado. Use Ctrl+C.");
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { bToast("Copiado!"); }, fallback);
+    } catch (e) { fallback(); }
+  });
+  renderChipsB(); renderItemsB(); renderApoios(); bSync(); bUpdate();
+
+  var TABS = ["relatorio", "boosting"];
   function showTab(name) {
     if (TABS.indexOf(name) < 0) name = "relatorio";
     TABS.forEach(function (t) {
