@@ -104,6 +104,10 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: .65; }
 .k-total small { font-size: 1.2rem; color: var(--muted); font-weight: 600; }
 .a-stepper { display: inline-flex; align-items: center; gap: 12px; margin: 4px 0 10px; }
 .a-stepper output { min-width: 2ch; text-align: center; font-weight: 700; font-size: 1.2rem; }
+.a-ind { border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+.a-ind h3 { margin: 0 0 8px; font-family: var(--font-display); font-size: 1.1rem; letter-spacing: .03em; color: var(--badge); }
+.a-ind .items { margin-top: 8px; }
+.a-ind .chips { margin: 8px 0; }
 .a-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
 .a-row input { flex: 1; min-width: 0; }
 .menubar { position: relative; display: flex; align-items: center; gap: 12px; padding: 8px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 18px; }
@@ -149,12 +153,12 @@ button.small { padding: 6px 10px; font-size: 13px; }
 @media (max-width: 900px) { .preview-col { position: static; } }
 .out-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
 .out-head h2 { margin: 0; }
-pre#out {
+pre#out, pre#b-out, pre#a-out, pre#k-out {
   margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px;
   font-family: var(--font-mono); font-size: 13px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere;
 }
 .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-#toast { color: var(--ok); font-weight: 600; font-size: .9rem; min-height: 1.2em; }
+#toast, #b-toast, #a-toast, #k-toast { color: var(--ok); font-weight: 600; font-size: .9rem; min-height: 1.2em; }
 .relato-tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -184,7 +188,6 @@ pre#out {
         <p class="hm-lead">Ferramentas do 1º Batalhão de Polícia Militar para montar os relatórios das ocorrências sem perder tempo.</p>
         <div class="hm-cta">
           <button type="button" class="hm-btn gold" data-goto="relatorio">Fazer um relatório</button>
-          <button type="button" class="hm-btn" data-goto="boosting">Relatório de boosting</button>
         </div>
       </div>
     </div>
@@ -506,16 +509,9 @@ pre#out {
 
         <section class="card">
           <h2>Indivíduos na ação</h2>
+          <p class="hint">Cada indivíduo tem o próprio ID e os próprios itens apreendidos.</p>
           <div class="a-stepper"><button type="button" class="small" id="a-ind-menos" aria-label="Menos um indivíduo">−</button><output id="a-ind-n" aria-live="polite">1</output><button type="button" class="small" id="a-ind-mais" aria-label="Mais um indivíduo">+</button></div>
           <div id="a-ind-list"></div>
-        </section>
-
-        <section class="card">
-          <h2>Itens apreendidos</h2>
-          <div class="items" id="a-items"></div>
-          <div class="chips" id="a-chips" aria-label="Itens comuns"></div>
-          <p class="hint">Clique num item comum para adicionar. Deixe a lista vazia se nada foi apreendido.</p>
-          <div style="margin-top:8px"><button type="button" class="small" id="a-btn-add-item">+ Outro item</button></div>
         </section>
 
         <section class="card">
@@ -600,7 +596,7 @@ pre#out {
 (function () {
   var KEY = "relatorio-1bpm-v1";
   var FIXED = ["header", "me", "team"];
-  var COMMON = ["chip ilegal", "arma", "munição", "drogas", "dinheiro sujo", "colete balístico", "rádio ilegal"];
+  var COMMON = ["Chip ilegal", "Arma", "Munição", "Drogas", "Dinheiro sujo", "Colete balístico", "Rádio ilegal"];
 
   function blank() {
     return {
@@ -1219,11 +1215,23 @@ pre#out {
   /* ---------- Aba Ações ---------- */
   var AKEY = "relatorio-1bpm-acoes-v1";
   var MAX_POL = 20, MAX_IND = 30;
+  function novoInd() { return { id: "", items: [] }; }
   function blankA() {
-    return { tipo: "", regiao: "", relato: "", relatoManual: false, pol: [""], ind: [""], items: [], obs: "" };
+    return { tipo: "", regiao: "", relato: "", relatoManual: false, pol: [""], ind: [novoInd()], obs: "" };
   }
   function loadA() {
-    try { var raw = localStorage.getItem(AKEY); if (raw) { var o = Object.assign(blankA(), JSON.parse(raw)); if (!Array.isArray(o.pol) || !o.pol.length) o.pol = [""]; if (!Array.isArray(o.ind) || !o.ind.length) o.ind = [""]; if (!Array.isArray(o.items)) o.items = []; return o; } } catch (e) {}
+    try {
+      var raw = localStorage.getItem(AKEY);
+      if (raw) {
+        var o = Object.assign(blankA(), JSON.parse(raw));
+        if (!Array.isArray(o.pol) || !o.pol.length) o.pol = [""];
+        if (!Array.isArray(o.ind) || !o.ind.length) o.ind = [novoInd()];
+        o.ind = o.ind.map(function (i) { return typeof i === "string" ? { id: i, items: [] } : { id: i.id || "", items: Array.isArray(i.items) ? i.items : [] }; });
+        if (Array.isArray(o.items) && o.items.length) { o.ind[0].items = o.ind[0].items.concat(o.items); }
+        delete o.items;
+        return o;
+      }
+    } catch (e) {}
     return blankA();
   }
   function saveA() { try { localStorage.setItem(AKEY, JSON.stringify(A)); } catch (e) {} }
@@ -1237,6 +1245,10 @@ pre#out {
     t += " Participaram da ação " + n + (n === 1 ? " policial" : " policiais") + ", com " + m + (m === 1 ? " indivíduo envolvido." : " indivíduos envolvidos.");
     return t;
   }
+  function itensTxt(items) {
+    var its = items.filter(function (i) { return i.n.trim(); });
+    return its.length ? its.map(function (i) { return (i.q || 1) + "x " + i.n.trim(); }).join(", ") : "Nada apreendido";
+  }
   function aBuild() {
     var L = [];
     L.push(S.header.trim()); L.push("");
@@ -1245,11 +1257,10 @@ pre#out {
     A.pol.forEach(function (n) { L.push("→ " + (n.trim() || "Vaga")); });
     L.push("");
     L.push("🧑‍🤝‍🧑 INDIVÍDUOS NA AÇÃO:");
-    A.ind.forEach(function (n, i) { L.push("→ " + (n.trim() ? "ID " + n.trim() : "Indivíduo " + (i + 1) + ": ID não informado")); });
-    L.push("");
-    L.push("📦 ITENS APREENDIDOS:");
-    var its = A.items.filter(function (i) { return i.n.trim(); });
-    if (its.length) { its.forEach(function (i) { L.push((i.q || 1) + "x " + i.n.trim()); }); } else { L.push("Nada apreendido"); }
+    A.ind.forEach(function (ind, i) {
+      L.push("→ " + (ind.id.trim() ? "ID " + ind.id.trim() : "Indivíduo " + (i + 1) + ": ID não informado"));
+      L.push("   📦 Itens apreendidos: " + itensTxt(ind.items));
+    });
     L.push(""); L.push("⚠️ OBSERVAÇÕES:");
     L.push(A.obs.trim() || "Sem observações");
     return L.join("\n");
@@ -1264,55 +1275,63 @@ pre#out {
     $("a-out").textContent = aBuild();
     saveA();
   }
-  function renderLista(boxId, arr, prefix, placeholder, comEu) {
-    var box = $(boxId); box.innerHTML = "";
-    arr.forEach(function (val, idx) {
+  function renderPoliciais() {
+    var box = $("a-pol-list"); box.innerHTML = "";
+    A.pol.forEach(function (val, idx) {
       var row = document.createElement("div"); row.className = "a-row";
-      var inp = document.createElement("input"); inp.type = "text"; inp.value = val; inp.id = prefix + idx; inp.autocomplete = "off"; inp.placeholder = placeholder;
-      inp.setAttribute("aria-label", placeholder + " " + (idx + 1));
-      if (comEu) inp.setAttribute("list", "dl-team");
-      inp.addEventListener("input", function () { arr[idx] = inp.value; aUpdate(); });
+      var inp = document.createElement("input"); inp.type = "text"; inp.value = val; inp.id = "a-pol-" + idx; inp.autocomplete = "off";
+      inp.placeholder = "Nome / passaporte do policial"; inp.setAttribute("aria-label", "Policial " + (idx + 1)); inp.setAttribute("list", "dl-team");
+      inp.addEventListener("input", function () { A.pol[idx] = inp.value; aUpdate(); });
       row.appendChild(inp);
-      if (comEu && idx === 0) {
+      if (idx === 0) {
         var eu = document.createElement("button"); eu.type = "button"; eu.className = "small"; eu.textContent = "Eu";
-        eu.addEventListener("click", function () { arr[0] = S.me; inp.value = S.me; aUpdate(); });
+        eu.addEventListener("click", function () { A.pol[0] = S.me; inp.value = S.me; aUpdate(); });
         row.appendChild(eu);
       }
       box.appendChild(row);
     });
   }
-  function aRenderListas() {
-    renderLista("a-pol-list", A.pol, "a-pol-", "Nome / passaporte do policial", true);
-    renderLista("a-ind-list", A.ind, "a-ind-", "ID do indivíduo", false);
-  }
-  function renderItemsA() {
-    var box = $("a-items"); box.innerHTML = "";
-    A.items.forEach(function (it, idx) {
-      var row = document.createElement("div"); row.className = "item";
-      var q = document.createElement("input"); q.type = "number"; q.min = "1"; q.value = it.q; q.setAttribute("aria-label", "Quantidade"); q.id = "a-qty-" + idx;
-      q.addEventListener("input", function () { it.q = parseInt(q.value, 10) || 1; aUpdate(); });
-      var n = document.createElement("input"); n.type = "text"; n.value = it.n; n.setAttribute("aria-label", "Item"); n.id = "a-name-" + idx; n.autocomplete = "off"; n.placeholder = "Item apreendido (ex.: dinheiro sujo)";
-      n.addEventListener("input", function () { it.n = n.value; aUpdate(); });
-      var x = document.createElement("button"); x.type = "button"; x.className = "small"; x.textContent = "Remover";
-      x.addEventListener("click", function () { A.items.splice(idx, 1); renderItemsA(); aUpdate(); });
-      row.appendChild(q); row.appendChild(n); row.appendChild(x); box.appendChild(row);
-    });
-  }
-  function renderChipsA() {
-    var c = $("a-chips");
-    COMMON.forEach(function (name) {
-      var b = document.createElement("button"); b.type = "button"; b.textContent = "+ " + name;
-      b.addEventListener("click", function () {
-        var found = A.items.filter(function (i) { return i.n.toLowerCase() === name.toLowerCase(); })[0];
-        if (found) found.q = (found.q || 1) + 1; else A.items.push({ q: 1, n: name });
-        renderItemsA(); aUpdate();
+  function renderIndividuos() {
+    var box = $("a-ind-list"); box.innerHTML = "";
+    A.ind.forEach(function (ind, idx) {
+      var card = document.createElement("div"); card.className = "a-ind";
+      var h = document.createElement("h3"); h.textContent = "Indivíduo " + (idx + 1);
+      var inp = document.createElement("input"); inp.type = "text"; inp.value = ind.id; inp.id = "a-ind-" + idx; inp.autocomplete = "off";
+      inp.placeholder = "ID do indivíduo"; inp.setAttribute("aria-label", "ID do indivíduo " + (idx + 1));
+      inp.addEventListener("input", function () { ind.id = inp.value; aUpdate(); });
+      var items = document.createElement("div"); items.className = "items";
+      ind.items.forEach(function (it, j) {
+        var row = document.createElement("div"); row.className = "item";
+        var q = document.createElement("input"); q.type = "number"; q.min = "1"; q.value = it.q; q.id = "a-qty-" + idx + "-" + j; q.setAttribute("aria-label", "Quantidade");
+        q.addEventListener("input", function () { it.q = parseInt(q.value, 10) || 1; aUpdate(); });
+        var n = document.createElement("input"); n.type = "text"; n.value = it.n; n.id = "a-name-" + idx + "-" + j; n.autocomplete = "off"; n.placeholder = "Item apreendido deste indivíduo"; n.setAttribute("aria-label", "Item");
+        n.addEventListener("input", function () { it.n = n.value; aUpdate(); });
+        var x = document.createElement("button"); x.type = "button"; x.className = "small"; x.textContent = "Remover";
+        x.addEventListener("click", function () { ind.items.splice(j, 1); renderIndividuos(); aUpdate(); });
+        row.appendChild(q); row.appendChild(n); row.appendChild(x); items.appendChild(row);
       });
-      c.appendChild(b);
+      var chips = document.createElement("div"); chips.className = "chips"; chips.setAttribute("aria-label", "Itens comuns");
+      COMMON.forEach(function (name) {
+        var b = document.createElement("button"); b.type = "button"; b.textContent = "+ " + name;
+        b.addEventListener("click", function () {
+          var found = ind.items.filter(function (i) { return i.n.toLowerCase() === name.toLowerCase(); })[0];
+          if (found) found.q = (found.q || 1) + 1; else ind.items.push({ q: 1, n: name });
+          renderIndividuos(); aUpdate();
+        });
+        chips.appendChild(b);
+      });
+      var add = document.createElement("button"); add.type = "button"; add.className = "small"; add.textContent = "+ Outro item"; add.id = "a-add-item-" + idx;
+      add.addEventListener("click", function () {
+        ind.items.push({ q: 1, n: "" }); renderIndividuos(); aUpdate();
+        var last = document.getElementById("a-name-" + idx + "-" + (ind.items.length - 1)); if (last) last.focus();
+      });
+      card.appendChild(h); card.appendChild(inp); card.appendChild(items); card.appendChild(chips); card.appendChild(add);
+      box.appendChild(card);
     });
   }
   function aSync() {
     document.querySelectorAll("[data-ak]").forEach(function (el) { var k = el.dataset.ak; el.value = A[k] == null ? "" : A[k]; });
-    aRenderListas(); renderItemsA();
+    renderPoliciais(); renderIndividuos();
   }
   document.querySelectorAll("[data-ak]").forEach(function (el) {
     el.addEventListener(el.tagName === "SELECT" ? "change" : "input", function () {
@@ -1321,14 +1340,10 @@ pre#out {
       aUpdate();
     });
   });
-  $("a-pol-mais").addEventListener("click", function () { if (A.pol.length < MAX_POL) { A.pol.push(""); aRenderListas(); aUpdate(); } });
-  $("a-pol-menos").addEventListener("click", function () { if (A.pol.length > 1) { A.pol.pop(); aRenderListas(); aUpdate(); } });
-  $("a-ind-mais").addEventListener("click", function () { if (A.ind.length < MAX_IND) { A.ind.push(""); aRenderListas(); aUpdate(); } });
-  $("a-ind-menos").addEventListener("click", function () { if (A.ind.length > 1) { A.ind.pop(); aRenderListas(); aUpdate(); } });
-  $("a-btn-add-item").addEventListener("click", function () {
-    A.items.push({ q: 1, n: "" }); renderItemsA(); aUpdate();
-    var last = document.getElementById("a-name-" + (A.items.length - 1)); if (last) last.focus();
-  });
+  $("a-pol-mais").addEventListener("click", function () { if (A.pol.length < MAX_POL) { A.pol.push(""); renderPoliciais(); aUpdate(); } });
+  $("a-pol-menos").addEventListener("click", function () { if (A.pol.length > 1) { A.pol.pop(); renderPoliciais(); aUpdate(); } });
+  $("a-ind-mais").addEventListener("click", function () { if (A.ind.length < MAX_IND) { A.ind.push(novoInd()); renderIndividuos(); aUpdate(); } });
+  $("a-ind-menos").addEventListener("click", function () { if (A.ind.length > 1) { A.ind.pop(); renderIndividuos(); aUpdate(); } });
   $("a-btn-regen").addEventListener("click", function () { A.relatoManual = false; aUpdate(); });
   var att;
   function aToast(msg) { $("a-toast").textContent = msg; clearTimeout(att); att = setTimeout(function () { $("a-toast").textContent = ""; }, 2600); }
@@ -1342,7 +1357,7 @@ pre#out {
     }
     try { navigator.clipboard.writeText(text).then(function () { aToast("Copiado!"); }, fallback); } catch (e) { fallback(); }
   });
-  renderChipsA(); aSync(); aUpdate();
+  aSync(); aUpdate();
 
   var TABS = ["inicio", "relatorio", "acoes", "boosting", "corridas", "calculadora"];
   function showTab(name) {
