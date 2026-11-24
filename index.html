@@ -102,14 +102,18 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: .65; }
 .k-row input { grid-column: 2; grid-row: 1 / span 2; width: 100%; }
 .k-total { font-family: var(--font-display); font-weight: 700; font-size: 3.4rem; line-height: 1; color: var(--badge); margin: 4px 0; }
 .k-total small { font-size: 1.2rem; color: var(--muted); font-weight: 600; }
-.tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 18px; }
-.tab { border: 0; border-radius: 8px; background: transparent; padding: 10px 6px; margin: 0; text-align: center; white-space: nowrap; font-family: var(--font-display); font-weight: 600; font-size: 1.1rem; letter-spacing: .03em; color: var(--muted); }
+.menubar { position: relative; display: flex; align-items: center; gap: 12px; padding: 8px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 18px; }
+.menu-btn { flex: none; width: 44px; height: 44px; padding: 0; display: grid; place-items: center; border-radius: 10px; }
+.menu-btn svg { width: 24px; height: 24px; stroke: var(--badge); stroke-width: 2.2; stroke-linecap: round; fill: none; }
+.menu-btn[aria-expanded="true"] { border-color: var(--badge); }
+.menu-title { font-family: var(--font-display); font-weight: 700; font-size: 1.35rem; letter-spacing: .04em; text-transform: uppercase; color: var(--fg); }
+.tabs { position: absolute; top: calc(100% + 6px); left: 0; z-index: 30; display: flex; flex-direction: column; gap: 2px; min-width: min(280px, 100%); padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,.45); }
+.tabs[hidden] { display: none; }
+.tab { border: 0; border-radius: 8px; background: transparent; padding: 12px 14px; margin: 0; text-align: left; font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: .03em; color: var(--muted); }
 .tab:hover { color: var(--fg); background: rgba(255,255,255,.06); border: 0; }
 .tab[aria-selected="true"] { color: var(--badge); background: rgba(224,184,74,.14); box-shadow: inset 0 0 0 1.5px var(--badge); }
 .tab[aria-selected="true"]:hover { background: rgba(224,184,74,.2); }
-.tab:focus-visible { outline: 2px solid var(--badge); outline-offset: 2px; }
-@media (max-width: 720px) { .tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); } .tab { font-size: 1.02rem; padding: 11px 4px; } }
-@media (max-width: 360px) { .tab { font-size: .88rem; letter-spacing: 0; } }
+.tab:focus-visible, .menu-btn:focus-visible { outline: 2px solid var(--badge); outline-offset: 2px; }
 .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 12px; }
 .row .full { grid-column: 1 / -1; }
 @media (max-width: 520px) { .row { grid-template-columns: minmax(0, 1fr); } }
@@ -154,7 +158,10 @@ pre#out {
 </head>
 <body>
 <div class="wrap">
-  <nav class="tabs" role="tablist" aria-label="Seções do site">
+  <div class="menubar">
+    <button type="button" class="menu-btn" id="menu-btn" aria-label="Abrir menu" aria-haspopup="true" aria-expanded="false" aria-controls="menu-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <span class="menu-title" id="menu-title">Início</span>
+  <nav class="tabs" id="menu-panel" role="tablist" aria-label="Seções do site" hidden>
     <button type="button" class="tab" role="tab" id="tab-btn-inicio" data-tab="inicio" aria-controls="tab-inicio" aria-selected="true">Início</button>
     <button type="button" class="tab" role="tab" id="tab-btn-relatorio" data-tab="relatorio" aria-controls="tab-relatorio" aria-selected="false">Relatório</button>
     <button type="button" class="tab" role="tab" id="tab-btn-acoes" data-tab="acoes" aria-controls="tab-acoes" aria-selected="false">Ações</button>
@@ -162,6 +169,7 @@ pre#out {
     <button type="button" class="tab" role="tab" id="tab-btn-corridas" data-tab="corridas" aria-controls="tab-corridas" aria-selected="false">Corridas</button>
     <button type="button" class="tab" role="tab" id="tab-btn-calculadora" data-tab="calculadora" aria-controls="tab-calculadora" aria-selected="false">Calculadora</button>
   </nav>
+  </div>
 
   <section id="tab-inicio" role="tabpanel" aria-labelledby="tab-btn-inicio" hidden>
     <div class="hm-hero">
@@ -1147,8 +1155,20 @@ pre#out {
       $("tab-" + t).hidden = !on;
       $("tab-btn-" + t).setAttribute("aria-selected", on ? "true" : "false");
     });
+    $("menu-title").textContent = $("tab-btn-" + name).textContent;
+    closeMenu();
     try { history.replaceState(null, "", "#" + name); } catch (e) {}
   }
+  function closeMenu() { $("menu-panel").hidden = true; $("menu-btn").setAttribute("aria-expanded", "false"); $("menu-btn").setAttribute("aria-label", "Abrir menu"); }
+  $("menu-btn").addEventListener("click", function (e) {
+    e.stopPropagation();
+    var abrir = $("menu-panel").hidden;
+    $("menu-panel").hidden = !abrir;
+    $("menu-btn").setAttribute("aria-expanded", abrir ? "true" : "false");
+    $("menu-btn").setAttribute("aria-label", abrir ? "Fechar menu" : "Abrir menu");
+  });
+  document.addEventListener("click", function (e) { if (!e.target.closest(".menubar")) closeMenu(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !$("menu-panel").hidden) { closeMenu(); $("menu-btn").focus(); } });
   document.querySelectorAll(".tab").forEach(function (b) {
     b.addEventListener("click", function () { showTab(b.dataset.tab); });
   });
