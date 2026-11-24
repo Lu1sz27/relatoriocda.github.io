@@ -154,6 +154,7 @@ pre#out {
   <nav class="tabs" role="tablist" aria-label="Seções do site">
     <button type="button" class="tab" role="tab" id="tab-btn-inicio" data-tab="inicio" aria-controls="tab-inicio" aria-selected="true">Início</button>
     <button type="button" class="tab" role="tab" id="tab-btn-relatorio" data-tab="relatorio" aria-controls="tab-relatorio" aria-selected="false">Relatório</button>
+    <button type="button" class="tab" role="tab" id="tab-btn-acoes" data-tab="acoes" aria-controls="tab-acoes" aria-selected="false">Ações</button>
     <button type="button" class="tab" role="tab" id="tab-btn-boosting" data-tab="boosting" aria-controls="tab-boosting" aria-selected="false">Boosting</button>
     <button type="button" class="tab" role="tab" id="tab-btn-corridas" data-tab="corridas" aria-controls="tab-corridas" aria-selected="false">Corridas</button>
     <button type="button" class="tab" role="tab" id="tab-btn-calculadora" data-tab="calculadora" aria-controls="tab-calculadora" aria-selected="false">Calculadora</button>
@@ -451,6 +452,14 @@ pre#out {
   </div>
   </section>
 
+  <section id="tab-acoes" role="tabpanel" aria-labelledby="tab-btn-acoes" hidden>
+    <div class="card" style="text-align:center;padding:40px 20px">
+      <h2 style="margin-bottom:8px">Ações</h2>
+      <p style="font-size:1.1rem;margin:0 0 6px">🚧 Em manutenção</p>
+      <p class="hint" style="margin:0">Esta aba ainda está sendo preparada.</p>
+    </div>
+  </section>
+
   <section id="tab-corridas" role="tabpanel" aria-labelledby="tab-btn-corridas" hidden>
     <div class="card" style="text-align:center;padding:40px 20px">
       <h2 style="margin-bottom:8px">Corridas</h2>
@@ -505,7 +514,7 @@ pre#out {
   <option value="Sequestro">
   <option value="Tráfico de Drogas">
 </datalist>
-<datalist id="dl-origem"><option value="Central"><option value="Denúncia anônima"><option value="Denúncia por característica"><option value="Flagrante"><option value="Fundada suspeita"></datalist>
+<datalist id="dl-origem"><option value="Central"><option value="Denúncia por característica"><option value="Flagrante"><option value="Fundada suspeita"><option value="Uso de equipamento restrito e ocultação facial"></datalist>
 <datalist id="dl-team"></datalist>
 
 <script>
@@ -591,8 +600,8 @@ pre#out {
       t = "Durante o patrulhamento nas proximidades de uma QRU de " + oc + reg + ", identificamos o(s) requerente(s)" + vp + " em fundada suspeita de envolvimento " + (q ? "nessa ocorrência." : "no(s) referido(s) delito(s).");
     } else if (org === "denuncia por caracteristica") {
       t = "Recebemos uma denúncia (via central), de uma QRU de " + oc + reg + ", com as características do(s) requerente(s)" + (vehMention ? " e do veículo" : "") + ". Durante o patrulhamento, localizamos o(s) requerente(s) correspondente(s) às características informadas" + vp + ".";
-    } else if (org === "denuncia anonima") {
-      t = "Recebemos uma denúncia anônima, de uma QRU de " + oc + reg + ". Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
+    } else if (org === "uso de equipamento restrito e ocultacao facial") {
+      t = "Durante o patrulhamento nas proximidades de uma QRU de " + oc + reg + ", identificamos o(s) requerente(s)" + vp + " fazendo uso de equipamento restrito e ocultação facial, em fundada suspeita de envolvimento " + (q ? "nessa ocorrência." : "no(s) referido(s) delito(s).");
     } else {
       t = "Recebemos uma denúncia" + (S.origem.trim() ? " (via " + S.origem.trim().toLowerCase() + ")" : "") + ", de uma QRU de " + oc + reg + ", Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
     }
@@ -862,8 +871,8 @@ pre#out {
       t = "Durante o patrulhamento nas proximidades de uma QRU de boosting" + rankTxt + reg + ", identificamos o(s) requerente(s)" + vp + " em fundada suspeita de envolvimento nessa ocorrência.";
     } else if (org === "denuncia por caracteristica") {
       t = "Recebemos uma denúncia (via central), de uma QRU de boosting" + rankTxt + reg + ", com as características do veículo. Durante o patrulhamento, localizamos o(s) requerente(s) correspondente(s) às características informadas" + vp + ".";
-    } else if (org === "denuncia anonima") {
-      t = "Recebemos uma denúncia anônima, de uma QRU de boosting" + rankTxt + reg + ". Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
+    } else if (org === "uso de equipamento restrito e ocultacao facial") {
+      t = "Durante o patrulhamento nas proximidades de uma QRU de boosting" + rankTxt + reg + ", identificamos o(s) requerente(s)" + vp + " fazendo uso de equipamento restrito e ocultação facial, em fundada suspeita de envolvimento nessa ocorrência.";
     } else {
       t = "Recebemos uma denúncia" + (B.origem.trim() ? " (via " + B.origem.trim().toLowerCase() + ")" : "") + ", de uma QRU de boosting" + rankTxt + reg + ", Ao se deslocar para o referido local, encontramos o(s) requerente(s) " + crime + vp + ".";
     }
@@ -1127,7 +1136,7 @@ pre#out {
   });
   kUpdate();
 
-  var TABS = ["inicio", "relatorio", "boosting", "corridas", "calculadora"];
+  var TABS = ["inicio", "relatorio", "acoes", "boosting", "corridas", "calculadora"];
   function showTab(name) {
     if (TABS.indexOf(name) < 0) name = "inicio";
     TABS.forEach(function (t) {
